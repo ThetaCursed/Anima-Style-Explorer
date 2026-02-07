@@ -219,6 +219,7 @@ input[type="range"]::-webkit-slider-thumb {
     cursor: pointer;
     position: relative;
     transition: transform 0.2s ease-in-out;
+    -webkit-tap-highlight-color: transparent; /* Убирает синюю подсветку на мобильных при касании */
 }
 
 .card:hover {
