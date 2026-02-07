@@ -107,6 +107,13 @@ body {
     white-space: nowrap; /* Запрещаем перенос текста на новую строку */
 }
 
+/* Контейнер для кнопки "Сохранить в .txt" */
+.favorites-controls-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px; /* Отступ снизу, как у controls-container */
+}
+
 .sort-buttons-group {
     display: flex;
     gap: 10px; /* Сохраняем отступ между кнопками */

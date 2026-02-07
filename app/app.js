@@ -10,6 +10,7 @@
     const gridSlider = document.getElementById('grid-slider');
     const gridSliderValue = document.getElementById('grid-slider-value');
     const controlsContainer = document.getElementById('controls-container');
+    const favoritesControlsWrapper = document.getElementById('favorites-controls-wrapper');
 
 
     let allItems = [];
@@ -298,6 +299,7 @@
     tabGallery.addEventListener('click', () => {
         if (currentView === 'gallery') return;
         setActiveTab(tabGallery);
+        favoritesControlsWrapper.style.display = 'none';
         currentView = 'gallery';
         renderView();
     });
@@ -305,8 +307,32 @@
     tabFavorites.addEventListener('click', () => {
         if (currentView === 'favorites') return;
         setActiveTab(tabFavorites);
+        favoritesControlsWrapper.style.display = 'flex';
         currentView = 'favorites';
         renderView();
+    });
+
+    // --- Сохранение избранных в файл ---
+    const saveFavoritesBtn = document.getElementById('save-favorites-btn');
+    saveFavoritesBtn.addEventListener('click', () => {
+        if (favorites.size === 0) {
+            showToast('You have no favorites to save.');
+            return;
+        }
+
+        // Собираем имена артистов, по одному на строку
+        const textToSave = Array.from(favorites).join('\n');
+        const blob = new Blob([textToSave], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'favorite-artists.txt';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast('Favorites saved to file!');
     });
 
     // Обработка ввода в строке поиска
