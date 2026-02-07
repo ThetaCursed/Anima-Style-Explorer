@@ -28,7 +28,9 @@
 
 
     // --- Инициализация плавной прокрутки (Lenis) ---
-    const lenis = new Lenis();
+    const lenis = new Lenis({
+        smoothWheel: false, // Отключаем плавную прокрутку для колесика мыши
+    });
 
     function raf(time) {
         lenis.raf(time);
