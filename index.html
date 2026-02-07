@@ -1,0 +1,84 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anima 2B Style Explorer — Visual Artist Guide for AI</title>
+    <meta name="description" content="Visual database of 20,000+ artist styles for the Anima 2B model. Compare Danbooru artists and copy optimized prompts.">
+    <meta name="keywords" content="Anima 2B, Anima AI, Stable Diffusion, Artist Styles, Danbooru Tags, AI Art Library">
+    <link rel="stylesheet" href="app/style.css">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Anima 2B Style Explorer",
+      "description": "Visual benchmarking tool for artist styles in the Anima 2B model based on Danbooru dataset.",
+      "applicationCategory": "DesignApplication",
+      "operatingSystem": "Web",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      }
+    }
+    </script>
+</head>
+<body>
+    <div class="page-title-container">
+        <h1 class="page-title">Anima 2B Style Explorer</h1>
+        <p class="page-subtitle" id="style-counter"></p>
+        <div class="visually-hidden">
+            Welcome to the ultimate visual reference tool for the Anima 2B parameter model. 
+            This library features over 20,000 artist tags based on the Danbooru dataset. 
+            Our explorer provides visual benchmarking for Stable Diffusion and ComfyUI users, 
+            showcasing how the Anima 2B model interprets different artistic styles, 
+            from classic masters to modern illustrators. 
+            Compare artist weights, dataset popularity, and copy optimized @artist prompts 
+            for your AI art generation workflow.
+        </div>
+    </div>
+
+    <header class="header">
+        <nav class="tabs">
+            <button id="tab-gallery" class="tab-button active">Gallery</button>
+            <button id="tab-favorites" class="tab-button">Favorites</button>
+            <a href="about.html" class="tab-button">About</a>
+        </nav>
+    </header>
+    
+    <div id="controls-container" class="controls-container">
+        <div class="search-wrapper">
+            <input type="text" id="search-input" class="search-input" placeholder="Search by name...">
+        </div>
+        <div class="sort-controls">
+            <span class="sort-label">Sort by:</span> <!-- Этот текст будет слева -->
+            <div class="sort-buttons-group"> <!-- Новая обертка для кнопок -->
+                <button id="sort-by-name" class="sort-button" data-sort-by="name">
+                    Name <span class="sort-arrow"></span></button>
+                <button id="sort-by-works" class="sort-button" data-sort-by="works">
+                    Works <span class="sort-arrow"></span></button>
+            </div>
+        </div>
+        <div class="grid-controls">
+            <label for="grid-slider" id="grid-slider-label">Columns: <span id="grid-slider-value">5</span></label>
+            <input type="range" id="grid-slider" min="1" max="10" value="5" title="Number of columns">
+        </div>
+    </div>
+
+    <main id="gallery-container" class="gallery-grid"></main>
+
+    <div id="loader" class="loader-container" style="display: none;">
+        <div class="loader"></div>
+    </div>
+
+    <div id="toast-notification" class="toast">
+        Artist name copied to clipboard!
+    </div>
+
+    <button id="scroll-to-top" class="scroll-to-top-btn" title="Scroll to top">↑</button>
+
+    <script src="app/lenis.min.js"></script>
+    <script src="app/data.js"></script>
+    <script src="app/app.js"></script>
+</body>
+</html>

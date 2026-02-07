@@ -1,0 +1,470 @@
+﻿:root {
+    --background-color: #1c1c1e;
+    --card-background: #2c2c2e;
+    --text-color: #f2f2f7;
+    --secondary-text-color: #8e8e93;
+    --accent-color: #0a84ff;
+    --border-color: #3a3a3c;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    padding: 20px;
+}
+
+.page-title-container {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.page-title {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.page-subtitle {
+    font-size: 18px;
+    color: var(--secondary-text-color);
+}
+
+.header {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 30px;
+}
+
+.controls-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    /* flex-wrap: wrap; */ /* Убираем перенос, чтобы все было в одну строку */
+    gap: 20px;
+}
+
+.search-wrapper {
+    flex: 1;
+    min-width: 200px; /* Минимальная ширина для поля поиска */
+}
+
+.search-input {
+    width: 100%;
+    padding: 10px 15px;
+    max-width: 300px; /* Ограничим максимальную ширину поля поиска */
+    background-color: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    color: var(--text-color);
+    font-size: 14px;
+    font-family: inherit;
+}
+
+.search-input::placeholder {
+    color: var(--secondary-text-color);
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: var(--accent-color);
+}
+
+.sort-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Центрируем содержимое по горизонтали */
+    position: relative; /* Это позволит нам позиционировать метку относительно этого блока */
+    /* gap убираем, так как метка больше не в потоке */
+}
+
+.sort-label {
+    color: var(--secondary-text-color);
+    font-size: 14px;
+    position: absolute; /* Вынимаем метку из потока */
+    right: 100%; /* Ставим ее слева от родительского блока (.sort-controls) */
+    margin-right: 10px; /* Добавляем отступ между меткой и кнопками */
+    white-space: nowrap; /* Запрещаем перенос текста на новую строку */
+}
+
+.sort-buttons-group {
+    display: flex;
+    gap: 10px; /* Сохраняем отступ между кнопками */
+}
+
+.sort-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background-color: var(--card-background);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 9px 12px;
+    font-size: 14px;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.sort-button:hover {
+    background-color: var(--border-color);
+}
+
+.sort-button.active {
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+}
+
+.sort-arrow {
+    display: inline-block;
+    width: 12px;
+    text-align: center;
+    transition: transform 0.2s ease-in-out;
+    transform-origin: center;
+}
+
+.grid-controls {
+    display: flex;
+    flex: 1;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 10px;
+    color: var(--secondary-text-color);
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+#grid-slider-value {
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+/* Стилизация ползунка */
+input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 120px;
+    height: 6px;
+    background: var(--border-color);
+    border-radius: 3px;
+    outline: none;
+    cursor: pointer;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    background: var(--text-color);
+    border-radius: 50%;
+}
+
+.tabs {
+    display: flex;
+    background-color: var(--card-background);
+    border-radius: 10px;
+    padding: 4px;
+}
+
+.tab-button {
+    font-size: 15px;
+    font-weight: 600;
+    padding: 8px 24px;
+    border: none;
+    background-color: transparent;
+    color: var(--secondary-text-color);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none; /* Убираем подчеркивание у ссылки */
+}
+
+.tab-button.active {
+    background-color: var(--border-color);
+    color: var(--text-color);
+}
+
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(var(--grid-columns, 5), 1fr);
+    gap: 20px;
+}
+
+.card {
+    background-color: var(--card-background);
+    border-radius: 18px;
+    overflow: hidden;
+    cursor: pointer;
+    position: relative;
+    transition: transform 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: scale(1.03);
+}
+
+.card__image {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 832 / 1216;
+    object-fit: cover;
+    display: block;
+    background-color: var(--border-color);
+}
+
+.card__info {
+    padding-top: 2px;
+    padding-bottom: 2px;
+    text-align: center;
+}
+
+.card__artist {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--secondary-text-color);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.favorite-button {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 36px;
+    height: 36px;
+    background-color: rgba(0, 0, 0, 0.5);
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 18px;
+    transition: background-color 0.2s, transform 0.2s;
+}
+
+.favorite-button:hover {
+    background-color: rgba(0, 0, 0, 0.7);
+    transform: scale(1.1);
+}
+
+.favorite-button.favorited {
+    background-color: var(--accent-color);
+    color: #fff;
+}
+
+.works-count {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    min-width: 36px; /* Минимальная ширина равна высоте, чтобы сохранять круг */
+    height: 36px;
+    padding: 0 6px; /* Добавляем отступы по бокам для текста */
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 18px; /* Половина высоты для создания "пилюли" */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    /* Предотвращаем выделение текста при клике */
+    user-select: none;
+}
+
+.loader-container {
+    text-align: center;
+    padding: 20px;
+}
+
+.loader {
+    border: 4px solid var(--border-color);
+    border-top: 4px solid var(--accent-color);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #333;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 8px;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s, visibility 0.3s;
+    z-index: 1000;
+}
+
+.toast.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Кнопка "Наверх" */
+.scroll-to-top-btn {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 64px;
+    height: 64px;
+    background-color: var(--card-background);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    line-height: 1;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px);
+    transition: opacity 0.3s, visibility 0.3s, transform 0.3s;
+    z-index: 999;
+}
+
+.scroll-to-top-btn.visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+.scroll-to-top-btn.visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.scroll-to-top-btn:hover {
+    background-color: var(--border-color);
+}
+
+/* Адаптивность */
+@media (max-width: 1200px) {
+    .gallery-grid { --grid-columns: 4; }
+}
+@media (max-width: 992px) {
+    .controls-container {
+        flex-wrap: wrap; /* Позволяем контролам переноситься */
+        justify-content: center;
+    }
+    .search-wrapper {
+        flex-basis: 100%; /* Поиск занимает всю ширину */
+        margin-bottom: 15px;
+        display: flex; /* Добавляем flex для выравнивания */
+        justify-content: center; /* Центрируем содержимое (поле поиска) */
+    }
+    /* Скрываем слайдер на планшетах и телефонах */
+    .grid-controls { display: none; }
+}
+@media (max-width: 768px) {
+    body { padding: 10px; }
+    .header { margin-bottom: 20px; }
+    .gallery-grid { --grid-columns: 2; } /* 2 колонки для планшетов */
+    .scroll-to-top-btn {
+        bottom: 70px; /* Поднимаем кнопку выше на мобильных */
+        right: 20px;
+        width: 56px;
+        height: 56px;
+    }
+    .favorite-button {
+        width: 44px;
+        height: 44px;
+        font-size: 22px;
+    }
+    .works-count {
+        min-width: 44px;
+        height: 44px;
+        border-radius: 22px; /* Половина высоты */
+        font-size: 15px;
+        top: 10px;
+        left: 10px;
+    }
+}
+@media (max-width: 480px) {
+    .gallery-grid { --grid-columns: 1; } /* 1 колонка для телефонов */
+}
+
+/* Стили для страницы About */
+.about-page {
+    max-width: 800px;
+    margin: 30px auto;
+    padding: 20px;
+    background-color: var(--card-background);
+    border-radius: 18px;
+    line-height: 1.7;
+    box-sizing: border-box; /* Чтобы padding не увеличивал max-width */
+}
+
+.about-page h2 {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 24px;
+    color: var(--text-color);
+}
+
+.about-page h3 {
+    font-size: 20px;
+    font-weight: 600;
+    margin-top: 30px;
+    margin-bottom: 16px;
+    color: var(--text-color);
+}
+
+.about-page p, .about-page li {
+    font-size: 16px;
+    color: var(--secondary-text-color);
+    margin-bottom: 16px;
+}
+
+.about-page ul {
+    list-style-position: inside;
+    padding-left: 10px;
+}
+
+.about-page strong {
+    color: var(--text-color);
+    font-weight: 600;
+}
+
+@media (max-width: 768px) {
+    .about-page {
+        margin: 20px 10px; /* Уменьшаем отступы на мобильных */
+    }
+}
