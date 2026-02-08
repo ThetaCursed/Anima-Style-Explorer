@@ -221,11 +221,22 @@
             // Если больше нечего загружать, скрываем лоадер навсегда для этой сессии
             if (currentPage * itemsPerPage >= currentItems.length) {
                 loader.style.display = 'none';
+            } else {
+                // Проверяем, нужно ли загрузить еще, если контент не заполняет экран
+                checkAndLoadMoreIfContentDoesNotFillScreen();
             }
         }, 500);
     }
 
     // --- Функции-помощники ---
+
+    function checkAndLoadMoreIfContentDoesNotFillScreen() {
+        const hasScrollbar = document.body.scrollHeight > window.innerHeight;
+        const hasMoreItems = currentPage * itemsPerPage < currentItems.length;
+        if (!isLoading && !hasScrollbar && hasMoreItems) {
+            loadMoreItems();
+        }
+    }
 
     async function toggleFavorite(artistName, button) {
         const transaction = db.transaction(STORE_NAME, 'readwrite');
@@ -402,6 +413,9 @@
         clearTimeout(gridUpdateTimeout);
         gridUpdateTimeout = setTimeout(() => {
             localStorage.setItem(GRID_COLUMN_KEY, value);
+            // После изменения сетки может понадобиться догрузить элементы
+            // Даем небольшую задержку, чтобы DOM успел перестроиться
+            setTimeout(checkAndLoadMoreIfContentDoesNotFillScreen, 100);
         }, 1000); // Задержка в 1 секунду
     });
 
