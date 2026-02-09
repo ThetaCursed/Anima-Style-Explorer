@@ -137,7 +137,7 @@
             // Преобразуем новый формат данных в старый, с которым работает приложение
             allItems = galleryData.map(item => ({
                 artist: item.name, // Используем 'name' как 'artist'
-                image: `images/${item.id}.webp`, // Генерируем путь к изображению
+                image: `images/${item.p}/${item.id}.webp`, // Генерируем путь к изображению с учетом подпапки 'p'
                 worksCount: item.post_count, // Используем 'post_count' как 'worksCount'
                 id: item.id // Сохраняем id для возможного будущего использования
             }));
