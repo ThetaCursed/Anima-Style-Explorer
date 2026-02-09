@@ -41,12 +41,16 @@ body {
 .page-title {
     font-size: 32px;
     font-weight: 700;
-    margin-bottom: 8px;
+    margin-bottom: 16px; /* Увеличиваем отступ, чтобы он совпадал с отступом под виджетом */
 }
 
 .page-subtitle {
     font-size: 18px;
     color: var(--secondary-text-color);
+}
+
+.page-subtitle.hidden-by-widget {
+    display: none;
 }
 
 .header {
@@ -475,4 +479,114 @@ input[type="range"]::-webkit-slider-thumb {
     .about-page {
         margin: 20px 10px; /* Уменьшаем отступы на мобильных */
     }
+}
+
+/* --- Support Widget --- */
+.support-widget {
+    /* Убираем position: fixed и связанные стили */
+    max-width: 320px; /* Ограничиваем максимальную ширину */
+    width: 100%;
+    margin: 0 auto 16px; /* Центрируем и добавляем отступ снизу */
+    background-color: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: 18px;
+    padding: 14px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    position: relative; /* Для позиционирования крестика */
+    transition: opacity 0.3s, transform 0.3s, max-height 0.3s ease-out;
+    transform: translateY(0); /* Сбрасываем transform */
+}
+
+.support-widget.hidden {
+    display: none;
+}
+
+.support-widget__close {
+    /* Убираем абсолютное позиционирование */
+    flex-shrink: 0; /* Запрещаем сжиматься */
+    width: 36px;
+    height: 36px;
+    background: rgba(58, 58, 60, 0.6); /* Используем цвет --border-color с прозрачностью */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    color: rgba(242, 242, 247, 0.8); /* Используем --text-color с прозрачностью */
+    font-size: 22px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px); /* Для Safari */
+}
+
+.support-widget__close:hover {
+    background: rgba(58, 58, 60, 0.9);
+    color: var(--text-color);
+}
+
+.support-widget__top-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.support-widget__button {
+    display: block;
+    flex-grow: 1; /* Кнопка займет все доступное место */
+    padding: 0 10px;
+    height: 36px;
+    background: rgba(10, 132, 255, 0.25); /* Полупрозрачный синий, не слишком яркий */
+    color: rgba(242, 242, 247, 0.9); /* Можно сделать текст чуть ярче */
+    text-align: center;
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 600;
+    border: 1px solid rgba(10, 132, 255, 0.3); /* Рамка в тон кнопке */
+    border-radius: 10px;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+    line-height: 36px; /* Вертикально центрируем текст */
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px); /* Для Safari */
+}
+
+.support-widget__button:hover {
+    background: rgba(10, 132, 255, 0.4); /* Делаем фон чуть насыщеннее при наведении */
+    border-color: rgba(10, 132, 255, 0.6);
+    color: var(--text-color);
+}
+
+.progress-bar-container {
+    width: 100%;
+}
+
+.progress-bar__labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px; /* Увеличиваем шрифт */
+    color: var(--secondary-text-color);
+    margin-bottom: 6px; /* Увеличиваем отступ */
+}
+
+.progress-bar__labels #progress-current {
+    font-weight: 700; /* Делаем текущее число жирным */
+    color: var(--text-color);
+}
+
+.progress-bar__track {
+    width: 100%;
+    height: 6px;
+    background-color: var(--border-color);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.progress-bar__fill {
+    height: 100%;
+    width: 0; /* Будет установлено через JS */
+    background-color: var(--accent-color);
+    border-radius: 3px;
+    transition: width 0.5s ease-out;
 }

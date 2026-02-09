@@ -11,6 +11,7 @@
     const gridSliderValue = document.getElementById('grid-slider-value');
     const controlsContainer = document.getElementById('controls-container');
     const favoritesControlsWrapper = document.getElementById('favorites-controls-wrapper');
+    const styleCounter = document.getElementById('style-counter');
 
 
     let allItems = [];
@@ -143,7 +144,6 @@
             }));
 
             // Обновляем счетчик стилей
-            const styleCounter = document.getElementById('style-counter');
             styleCounter.textContent = `Artist-based styles: ${allItems.length.toLocaleString('en-US')}`;
 
             await loadFavoritesFromDB(); // Загружаем избранное из IndexedDB
@@ -270,7 +270,7 @@
 
     function showToast(message) {
         const toast = document.getElementById('toast-notification');
-        toast.textContent = message;
+        if (message) toast.textContent = message;
         toast.classList.add('show');
         setTimeout(() => {
             toast.classList.remove('show');
@@ -448,4 +448,51 @@
             console.error(err);
             galleryContainer.innerHTML = '<p style="text-align: center; grid-column: 1 / -1;">Failed to initialize database.</p>';
         });
+
+    // --- Логика виджета поддержки ---
+    const supportWidget = document.getElementById('support-widget');
+    const closeSupportWidgetBtn = document.getElementById('support-widget-close');
+    const progressCurrent = document.getElementById('progress-current');
+    const progressBarFill = document.getElementById('progress-bar-fill');
+    // const styleCounter = document.getElementById('style-counter'); // Уже определен выше
+    const WIDGET_HIDDEN_KEY = 'supportWidgetHiddenUntil';
+
+    function initSupportWidget() {
+        const hiddenUntil = localStorage.getItem(WIDGET_HIDDEN_KEY);
+        if (hiddenUntil && Date.now() < parseInt(hiddenUntil, 10)) {
+            supportWidget.classList.add('hidden');
+            return;
+        } else {
+            styleCounter.classList.add('hidden-by-widget'); // Скрываем счетчик, если виджет будет показан
+        }
+
+        // Обновляем прогресс-бар
+        const currentArtists = allItems.length;
+        const targetArtists = 5000;
+        const percentage = Math.min((currentArtists / targetArtists) * 100, 100);
+
+        progressCurrent.textContent = currentArtists.toLocaleString('en-US');
+        // Небольшая задержка для анимации
+        setTimeout(() => {
+            progressBarFill.style.width = `${percentage}%`;
+        }, 300);
+
+        supportWidget.classList.remove('hidden');
+    }
+
+    closeSupportWidgetBtn.addEventListener('click', () => {
+        supportWidget.classList.add('hidden');
+        styleCounter.classList.remove('hidden-by-widget'); // Показываем счетчик обратно
+        // Скрываем на 10 часов
+        const hideUntil = Date.now() + (10 * 60 * 60 * 1000);
+        localStorage.setItem(WIDGET_HIDDEN_KEY, hideUntil);
+    });
+
+    // Вызываем инициализацию после загрузки основных данных
+    // Добавляем вызов в конец функции loadInitialData
+    const originalLoadInitialData = loadInitialData;
+    loadInitialData = async function() {
+        await originalLoadInitialData.apply(this, arguments);
+        initSupportWidget(); // Инициализируем виджет после загрузки данных
+    };
 });
