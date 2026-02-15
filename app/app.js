@@ -21,8 +21,8 @@
     const itemsPerPage = 20;
     let searchTerm = ''; // 'gallery', 'favorites'
     let currentView = 'gallery'; // 'gallery', 'favorites', or 'about'
-    let sortType = 'name'; // 'name' or 'works'
-    let sortDirection = 'asc'; // 'asc' or 'desc'
+    let sortType = 'works'; // 'name' or 'works'
+    let sortDirection = 'desc'; // 'asc' or 'desc'
     let isLoading = false;
     let sortUpdateTimeout; // Переменная для таймера сохранения сортировки
     const SORT_TYPE_KEY = 'sortType';
