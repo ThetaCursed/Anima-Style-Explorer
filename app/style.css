@@ -674,13 +674,24 @@ input[type="range"]::-webkit-slider-thumb {
 
 .progress-bar__labels {
     display: flex;
-    justify-content: space-between;
-    font-size: 13px; /* Увеличиваем шрифт */
-    color: var(--secondary-text-color);
+    justify-content: space-between;    
     margin-bottom: 6px; /* Увеличиваем отступ */
 }
 
-.progress-bar__labels #progress-current {
+.progress-label-group {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+}
+
+.progress-label {
+    font-size: 13px;
+    color: var(--secondary-text-color);
+}
+
+.progress-bar__labels #progress-current,
+.progress-bar__labels #progress-target {
+    font-size: 13px;
     font-weight: 700; /* Делаем текущее число жирным */
     color: var(--text-color);
 }

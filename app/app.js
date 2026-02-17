@@ -39,18 +39,6 @@
     const SORT_DIRECTION_KEY = 'sortDirection';
 
 
-    // --- Инициализация плавной прокрутки (Lenis) ---
-    const lenis = new Lenis({
-        smoothWheel: false, // Отключаем плавную прокрутку для колесика мыши
-    });
-
-    function raf(time) {
-        lenis.raf(time);
-        requestAnimationFrame(raf);
-    }
-
-    requestAnimationFrame(raf);
-    // --- Конец инициализации плавной прокрутки ---
 
 
     // --- Функции создания элементов ---
@@ -243,7 +231,7 @@
         // Обновляем UI контролов перед отрисовкой
         updateSortButtonsUI();
 
-        lenis.scrollTo(0, { immediate: true }); // Мгновенная прокрутка вверх при ререндере
+        window.scrollTo({ top: 0, behavior: 'instant' }); // Мгновенная прокрутка вверх при ререндере
         
         // 1. Сортируем данные
         let sortedItems = [...allItems];
@@ -397,25 +385,25 @@
     // --- Обработчики событий ---
 
     // Появление/скрытие кнопки "Наверх"
-    lenis.on('scroll', (e) => {
+    window.addEventListener('scroll', () => {
         // Появление/скрытие кнопки "Наверх"
-        if (e.scroll > 300) {
+        if (window.scrollY > 300) {
             scrollToTopBtn.classList.add('visible');
         } else {
             scrollToTopBtn.classList.remove('visible');
         }
 
         // Проверяем, достигли ли мы конца страницы
-        if (!isLoading && (e.scroll + window.innerHeight) >= document.body.offsetHeight - 200) {
+        if (!isLoading && (window.innerHeight + window.scrollY) >= document.body.offsetHeight - 200) {
             if (currentPage * itemsPerPage < currentItems.length) {
                 loadMoreItems();
             }
         }
     });
-    
+
     // Клик по кнопке "Наверх"
     scrollToTopBtn.addEventListener('click', () => {
-        lenis.scrollTo(0, { duration: 1.5 }); // Плавная прокрутка наверх с помощью Lenis
+        window.scrollTo({ top: 0, behavior: 'smooth' }); // Плавная прокрутка наверх
     });
 
     tabGallery.addEventListener('click', () => {
@@ -747,7 +735,7 @@
         const percentage = Math.min((currentArtists / targetArtists) * 100, 100);
 
         progressCurrent.textContent = currentArtists.toLocaleString('en-US');
-        progressTarget.textContent = `${targetArtists.toLocaleString('en-US')} Styles`;
+        progressTarget.textContent = targetArtists.toLocaleString('en-US');
         // Небольшая задержка для анимации
         setTimeout(() => {
             progressBarFill.style.width = `${percentage}%`;

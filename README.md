@@ -8,7 +8,7 @@ The **Anima 2B Style Explorer** is a specialized tool for AI artists and prompt 
 Instead of guessing, you can now visually verify every style before you hit "Generate".
 
 ## ✨ Current Status: Phase 1
-- **Current Library:** 1,000+ high-quality artist previews.
+- **Current Library:** 5,000+ high-quality artist previews.
 - **Roadmap:** Expanding to a comprehensive database of 20,000+ tags.
 
 ## 🛠️ Key Features
@@ -23,7 +23,6 @@ Instead of guessing, you can now visually verify every style before you hit "Gen
 - **Core Model:** Anima 2B
 - **Tagging System:** Danbooru-based
 - **Frontend:** HTML5, CSS3 (Modern Flexbox/Grid), Vanilla JavaScript
-- **Smooth Scroll:** [Lenis](https://github.com/darkroomengineering/lenis)
 
 ## 🤝 Acknowledgments
 - **CircleStone Labs** for the incredible Anima 2B model.
