@@ -1,10 +1,10 @@
-<p align="center">
-  <img src="images/Anima 2B Style Explorer.png" alt="Anima 2B Style Explorer Banner" width="800">
-</p>
-
 # Anima 2B Style Explorer 🎨
 
 An interactive, high-performance visual database designed to explore artist styles within the **Anima 2B parameter model**. 
+
+<p align="center">
+  <img src="images/Anima 2B Style Explorer.png" alt="Anima 2B Style Explorer Banner" width="800">
+</p>
 
 ## 🚀 Overview
 The **Anima 2B Style Explorer** is a specialized tool for AI artists and prompt engineers. It provides a standardized way to benchmark how the **Anima 2B model** (by CircleStone Labs) interprets specific artist influences from the **Danbooru** dataset.
