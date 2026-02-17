@@ -540,7 +540,21 @@ input[type="range"]::-webkit-slider-thumb {
     }
 }
 @media (max-width: 480px) {
-    .gallery-grid { --grid-columns: 1; } /* 1 колонка для телефонов */
+    .gallery-grid { --grid-columns: 2; } /* 2 колонки для телефонов */
+    .favorite-button {
+        width: 32px;
+        height: 32px;
+        font-size: 16px;
+    }
+    .works-count {
+        min-width: 32px;
+        height: 32px;
+        border-radius: 16px;
+        font-size: 13px;
+    }
+    .favorite-button.remove-favorite {
+        font-size: 22px; /* Корректируем размер крестика */
+    }
 }
 
 /* Стили для страницы About */
