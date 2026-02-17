@@ -7,9 +7,9 @@ The **Anima 2B Style Explorer** is a specialized tool for AI artists and prompt 
 
 Instead of guessing, you can now visually verify every style before you hit "Generate".
 
-## ✨ Current Status: Phase 1
-- **Current Library:** 5,000+ high-quality artist previews.
-- **Roadmap:** Expanding to a comprehensive database of 20,000+ tags.
+## ✨ Current Status: Phase 2
+- **Current Library:** 5,000+ artist previews.
+- **Roadmap:** Expanding to a comprehensive database of 20,000+ artist tags.
 
 ## 🛠️ Key Features
 - **Visual Benchmarking:** Every artist is tested against a fixed control prompt for fair comparison.
@@ -17,9 +17,20 @@ Instead of guessing, you can now visually verify every style before you hit "Gen
 - **Dataset Insights:** Includes approximate training image counts to help predict style "strength".
 - **Performance First:** - Ultra-lightweight Vanilla JS architecture.
   - Optimized WebP images for instant loading.
-  - Smooth scrolling powered by Lenis.js.
 
-## 💻 Technical Stack
+## 💾 Offline Usage
+You can run this tool locally on your computer for offline access. The entire application is self-contained and is only ~200MB.
+
+1.  **Download the project:**
+    *   **Direct Download:** [Click here to download the ZIP file](https://github.com/ThetaCursed/Anima-Style-Explorer/archive/refs/heads/main.zip).
+    *   **Or via Git:** `git clone https://github.com/ThetaCursed/Anima-Style-Explorer.git`
+
+2.  **Unzip the folder** if you downloaded the ZIP file.
+
+3.  **Run the application:** Simply open the `index.html` file in your web browser.
+
+
+## � Technical Stack
 - **Core Model:** Anima 2B
 - **Tagging System:** Danbooru-based
 - **Frontend:** HTML5, CSS3 (Modern Flexbox/Grid), Vanilla JavaScript
