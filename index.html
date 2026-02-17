@@ -26,6 +26,7 @@
 <body>
     <div class="page-title-container">
         <h1 class="page-title">Anima 2B - Style Explorer</h1>
+        <a href="https://github.com/ThetaCursed" class="author-credit" title="Created by ThetaCursed" target="_blank" rel="noopener noreferrer">Created by <span>ThetaCursed</span></a>
         <!-- Support Widget -->
         <div id="support-widget" class="support-widget hidden">
             <div class="support-widget__top-row">
@@ -37,7 +38,7 @@
             <div class="progress-bar-container">
                 <div class="progress-bar__labels">
                     <span id="progress-current">0</span>
-                    <span id="progress-target">5,000 Styles</span>
+                    <span id="progress-target"></span>
                 </div>
                 <div class="progress-bar__track">
                     <div id="progress-bar-fill" class="progress-bar__fill"></div>
@@ -68,25 +69,36 @@
     <div id="controls-container" class="controls-container">
         <div class="search-wrapper">
             <input type="text" id="search-input" class="search-input" placeholder="Search by name...">
+            <button id="clear-search-btn" class="clear-input-btn" title="Clear search" style="display: none;">×</button>
         </div>
-        <div class="sort-controls">
-            <span class="sort-label">Sort by:</span> <!-- Этот текст будет слева -->
-            <div class="sort-buttons-group"> <!-- Новая обертка для кнопок -->
-                <button id="sort-by-name" class="sort-button" data-sort-by="name">
-                    Name <span class="sort-arrow"></span></button>
-                <button id="sort-by-works" class="sort-button" data-sort-by="works">
-                    Works <span class="sort-arrow"></span></button>
+        <div class="sort-jump-group">
+            <div class="sort-controls">
+                <span class="sort-label">Sort by:</span> <!-- Этот текст будет слева -->
+                <div class="sort-buttons-group"> <!-- Новая обертка для кнопок -->
+                    <button id="sort-by-name" class="sort-button" data-sort-by="name">
+                        Name <span class="sort-arrow"></span></button>
+                    <button id="sort-by-works" class="sort-button" data-sort-by="works">
+                        Works <span class="sort-arrow"></span></button>
+                </div>
+            </div>
+            <!-- Container for the export button, which appears only on the Favorites tab -->
+            <div id="favorites-controls-wrapper" style="display: none;">
+                <button id="save-favorites-btn" class="sort-button" title="Export the names of all favorite artists to a text file (.txt)">Export Favorites (.txt)</button>
+            </div>
+            <div class="jump-controls">
+                <div class="jump-wrapper"> <!-- Новый контейнер для позиционирования -->
+                    <input type="number" id="jump-input" class="search-input" placeholder="Jump to work count...">
+                    <button id="clear-jump-btn" class="clear-input-btn" title="Clear jump" style="display: none;">×</button>
+                </div>
             </div>
         </div>
         <div class="grid-controls">
-            <label for="grid-slider" id="grid-slider-label">Columns: <span id="grid-slider-value">5</span></label>
-            <input type="range" id="grid-slider" min="1" max="10" value="5" title="Number of columns">
+            <div class="slider-wrapper">
+                <label for="grid-slider" id="grid-slider-label">Columns: <span id="grid-slider-value">5</span></label>
+                <input type="range" id="grid-slider" min="1" max="10" value="5" title="Number of columns">
+            </div>
+            <small class="hotkey-hint" title="Use number keys 1-9 and 0 to change column count">[1-0] keys</small>
         </div>
-    </div>
-
-    <!-- Container for the export button, which appears only on the Favorites tab -->
-    <div id="favorites-controls-wrapper" class="favorites-controls-wrapper" style="display: none;">
-        <button id="save-favorites-btn" class="sort-button" title="Export the names of all favorite artists to a text file (.txt)">Export Favorites (.txt)</button>
     </div>
 
 

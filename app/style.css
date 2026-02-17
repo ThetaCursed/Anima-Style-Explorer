@@ -23,6 +23,7 @@ body {
 .page-title-container {
     text-align: center;
     margin-bottom: 30px;
+    position: relative; /* Необходимо для позиционирования дочернего .author-credit */
 }
 
 
@@ -53,16 +54,27 @@ body {
     display: none;
 }
 
+.page-subtitle .style-count-number {
+    font-weight: 600;
+    color: var(--text-color);
+    background-color: var(--border-color);
+    padding: 3px 8px;
+    border-radius: 8px;
+    margin-left: 6px;
+    user-select: none;
+}
+
 .header {
     display: flex;
     justify-content: center;
     margin-bottom: 30px;
+    position: relative; /* Для позиционирования .author-credit на странице About */
 }
 
 .controls-container {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start; /* Выравниваем по верху, чтобы элементы не растягивались по высоте */
     margin-bottom: 20px;
     /* flex-wrap: wrap; */ /* Убираем перенос, чтобы все было в одну строку */
     gap: 20px;
@@ -70,12 +82,14 @@ body {
 
 .search-wrapper {
     flex: 1;
+    position: relative;
     min-width: 200px; /* Минимальная ширина для поля поиска */
+    max-width: 300px; /* Ограничиваем ширину контейнера, чтобы он соответствовал инпуту */
 }
 
 .search-input {
     width: 100%;
-    padding: 10px 15px;
+    padding: 10px 45px 10px 15px; /* Добавляем отступ справа для крестика */
     max-width: 300px; /* Ограничим максимальную ширину поля поиска */
     background-color: var(--card-background);
     border: 1px solid var(--border-color);
@@ -83,15 +97,66 @@ body {
     color: var(--text-color);
     font-size: 14px;
     font-family: inherit;
+    text-align: left; /* Выравнивание по левому краю по умолчанию */
 }
 
 .search-input::placeholder {
     color: var(--secondary-text-color);
 }
 
+.clear-input-btn { /* Переименовываем класс для универсальности */
+    position: absolute;
+    right: 15px; /* Корректируем позицию с учетом нового padding */
+    top: 50%;
+    transform: translateY(-50%);
+    width: 28px;
+    height: 28px;
+    background-color: var(--border-color);
+    border: none;
+    border-radius: 50%;
+    color: var(--secondary-text-color);
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.clear-input-btn:hover {
+    background-color: #4a4a4c;
+    color: var(--text-color);
+}
+
+/* --- Стили для "перехода к номеру" --- */
+.jump-controls {
+    display: flex;
+    justify-content: center; /* Центрируем, чтобы выровнять с кнопками сортировки */
+    padding-top: 15px; /* Отступ сверху до инпута и кнопки */
+    border-top: 1px solid var(--border-color); /* Разделительная линия */
+}
+
+.jump-wrapper {
+    position: relative;
+}
+
+.jump-controls .search-input {
+    max-width: 190px; /* Увеличиваем поле ввода, чтобы помещался placeholder */
+    align-items: center;
+    text-align: center; /* Центрируем текст для поля перехода на всех устройствах */
+}
+
 .search-input:focus {
     outline: none;
     border-color: var(--accent-color);
+}
+
+.sort-jump-group {
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* Увеличиваем отступ между сортировкой и переходом */    
+    align-items: center; /* Центрируем дочерние блоки (сортировку и переход) */
 }
 
 .sort-controls {
@@ -109,13 +174,6 @@ body {
     right: 100%; /* Ставим ее слева от родительского блока (.sort-controls) */
     margin-right: 10px; /* Добавляем отступ между меткой и кнопками */
     white-space: nowrap; /* Запрещаем перенос текста на новую строку */
-}
-
-/* Контейнер для кнопки "Сохранить в .txt" */
-.favorites-controls-wrapper {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 20px; /* Отступ снизу, как у controls-container */
 }
 
 .sort-buttons-group {
@@ -137,7 +195,6 @@ body {
     cursor: pointer;
     transition: background-color 0.2s, border-color 0.2s;
 }
-
 .sort-button:hover {
     background-color: var(--border-color);
 }
@@ -155,15 +212,47 @@ body {
     transform-origin: center;
 }
 
+/* Убираем стрелки в input[type=number] для Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.search-wrapper.disabled,
+.sort-controls.disabled,
+.jump-controls.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
 .grid-controls {
     display: flex;
-    flex: 1;
-    justify-content: flex-end;
-    align-items: center;
+    flex-direction: column; /* Ставим элементы друг под другом */
+    align-items: flex-end; /* Выравниваем по правому краю */
+    flex: 1; /* Добавляем гибкость, чтобы выровнять центральный блок */
+    max-width: 300px; /* Ограничиваем ширину, чтобы она была симметрична блоку поиска */
+    justify-content: center; /* Центрируем по вертикали относительно других контролов */
     gap: 10px;
     color: var(--secondary-text-color);
     font-size: 14px;
     white-space: nowrap;
+}
+
+.grid-controls .slider-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.hotkey-hint {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-color);
+    background-color: var(--border-color);
+    padding: 4px 8px;
+    border-radius: 6px;
+    user-select: none; /* Предотвращаем выделение текста */
 }
 
 #grid-slider-value {
@@ -197,6 +286,12 @@ input[type="range"]::-webkit-slider-thumb {
     background-color: var(--card-background);
     border-radius: 10px;
     padding: 4px;
+}
+.tabs .author-credit {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
 }
 
 .tab-button {
@@ -287,6 +382,12 @@ input[type="range"]::-webkit-slider-thumb {
 .favorite-button.favorited {
     background-color: var(--accent-color);
     color: #fff;
+}
+
+.favorite-button.remove-favorite {
+    font-size: 26px; /* Делаем крестик чуть больше */
+    background-color: rgba(0, 0, 0, 0.5); /* Стандартный фон */
+    color: #fff; /* Белый крестик */
 }
 
 .works-count {
@@ -399,6 +500,15 @@ input[type="range"]::-webkit-slider-thumb {
     .search-wrapper {
         flex-basis: 100%; /* Поиск занимает всю ширину */
         margin-bottom: 15px;
+        display: flex; /* Добавляем flex для выравнивания */
+        justify-content: center; /* Центрируем поле поиска */
+    }
+    .search-input {
+        text-align: center; /* Центрируем текст на мобильных */
+    }
+    .jump-controls {
+        flex-basis: 100%;
+        justify-content: center;
         display: flex; /* Добавляем flex для выравнивания */
         justify-content: center; /* Центрируем содержимое (поле поиска) */
     }
@@ -589,4 +699,31 @@ input[type="range"]::-webkit-slider-thumb {
     background-color: var(--accent-color);
     border-radius: 3px;
     transition: width 0.5s ease-out;
+}
+
+/* --- Author Credit --- */
+.author-credit {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--secondary-text-color);
+    font-size: 14px;
+    text-decoration: none;
+}
+
+.author-credit span {
+    color: var(--text-color);
+    font-weight: 700;
+    transition: color 0.2s ease-in-out;
+}
+
+.author-credit:hover span {
+    color: var(--accent-color);
+}
+
+@media (max-width: 992px) {
+    .author-credit {
+        display: none; /* Скрываем авторство на мобильных устройствах */
+    }
 }
