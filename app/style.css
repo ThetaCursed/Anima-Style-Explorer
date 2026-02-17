@@ -285,7 +285,6 @@ input[type="range"]::-webkit-slider-thumb {
     display: flex;
     background-color: var(--card-background);
     border-radius: 10px;
-    padding: 4px;
 }
 .tabs .author-credit {
     position: absolute;
@@ -297,7 +296,7 @@ input[type="range"]::-webkit-slider-thumb {
 .tab-button {
     font-size: 15px;
     font-weight: 600;
-    padding: 8px 24px;
+    padding: 12px 24px;
     border: none;
     background-color: transparent;
     color: var(--secondary-text-color);
@@ -729,12 +728,12 @@ input[type="range"]::-webkit-slider-thumb {
 /* --- Author Credit --- */
 .author-credit {
     position: absolute;
-    right: 0;
-    top: 50%;
-    transform: translateY(-50%);
+    right: 20px;
+    top: 20px;
     color: var(--secondary-text-color);
     font-size: 14px;
     text-decoration: none;
+    z-index: 10; /* На случай перекрытия другими элементами */
 }
 
 .author-credit span {

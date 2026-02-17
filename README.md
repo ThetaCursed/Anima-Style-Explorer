@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="images/Anima 2B Style Explorer.png" alt="Anima 2B Style Explorer Banner" width="800">
+</p>
+
 # Anima 2B Style Explorer 🎨
 
 An interactive, high-performance visual database designed to explore artist styles within the **Anima 2B parameter model**. 
@@ -30,7 +34,7 @@ You can run this tool locally on your computer for offline access. The entire ap
 3.  **Run the application:** Simply open the `index.html` file in your web browser.
 
 
-## � Technical Stack
+## 💻 Technical Stack
 - **Core Model:** Anima 2B
 - **Tagging System:** Danbooru-based
 - **Frontend:** HTML5, CSS3 (Modern Flexbox/Grid), Vanilla JavaScript

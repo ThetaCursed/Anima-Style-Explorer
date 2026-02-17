@@ -500,6 +500,13 @@
         searchInput.dispatchEvent(event);
     });
 
+    // Скрываем клавиатуру на мобильных при нажатии Enter
+    searchInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && window.innerWidth <= 768) {
+            e.target.blur();
+        }
+    });
+
     // --- Логика перехода к номеру ---
     function handleJump(isReset = false) {
         const targetWorksCount = parseInt(jumpInput.value, 10);
@@ -557,6 +564,9 @@
         if (e.key === 'Enter') {
             clearTimeout(jumpTimeout); // Отменяем предыдущий таймер, если есть
             handleJump();
+            if (window.innerWidth <= 768) {
+                e.target.blur(); // Скрываем клавиатуру на мобильных
+            }
         }
     });
 
