@@ -8,6 +8,12 @@
     const searchInput = document.getElementById('search-input');
     const sortByNameBtn = document.getElementById('sort-by-name');
     const sortByWorksBtn = document.getElementById('sort-by-works');
+    const sortByUniquenessBtn = document.getElementById('sort-by-uniqueness');
+    const sortByRatingBtn = document.getElementById('sort-by-rating');
+    const uniquenessMinSlider = document.getElementById('uniqueness-min-slider');
+    const uniquenessMaxSlider = document.getElementById('uniqueness-max-slider');
+    const uniquenessRangeText = document.getElementById('uniqueness-range-text');
+    const sliderTrackActive = document.getElementById('slider-track-active');
     const scrollToTopBtn = document.getElementById('scroll-to-top');
     const gridSlider = document.getElementById('grid-slider');
     const gridSliderValue = document.getElementById('grid-slider-value');
@@ -23,13 +29,15 @@
 
     let allItems = [];
     let itemsSortedByWorks = []; // Новый массив для быстрого поиска по работам
-    let favorites = new Map(); // Используем Map для хранения {id: timestamp}
+    let favorites = new Map(); // Используем Map для хранения {id: {timestamp, rating}}
     let currentItems = [];
     let currentPage = 0;
     let startIndexOffset = 0; // Смещение для "перехода к номеру"
     const itemsPerPage = 20;
     let searchTerm = ''; // 'gallery', 'favorites'
     let currentView = 'gallery'; // 'gallery', 'favorites', or 'about'
+    let uniquenessMinFilter = 0;
+    let uniquenessMaxFilter = 100;
     let sortType = 'name'; // 'name' or 'works'
     let sortDirection = 'asc'; // 'asc' or 'desc'
     let isLoading = false;
@@ -50,7 +58,7 @@
 
     function initDB() {
         return new Promise((resolve, reject) => {
-            const request = indexedDB.open(DB_NAME, 2); // Увеличиваем версию для обновления схемы
+            const request = indexedDB.open(DB_NAME, 3); // Version 3 for ratings
 
             request.onerror = () => {
                 console.error('IndexedDB error:', request.error);
@@ -64,13 +72,16 @@
 
             request.onupgradeneeded = (event) => {
                 const db = event.target.result;
-                // Удаляем старое хранилище, если оно существует, чтобы избежать конфликтов
-                if (db.objectStoreNames.contains(STORE_NAME)) {
-                    db.deleteObjectStore(STORE_NAME);
+                if (!db.objectStoreNames.contains(STORE_NAME)) {
+                    const objectStore = db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+                    objectStore.createIndex('timestamp', 'timestamp', { unique: false });
+                    objectStore.createIndex('rating', 'rating', { unique: false });
+                } else {
+                    const objectStore = event.currentTarget.transaction.objectStore(STORE_NAME);
+                    if (!objectStore.indexNames.contains('rating')) {
+                        objectStore.createIndex('rating', 'rating', { unique: false });
+                    }
                 }
-                // Создаем новое хранилище с id в качестве ключа и индексом по временной метке
-                const objectStore = db.createObjectStore(STORE_NAME, { keyPath: 'id' });
-                objectStore.createIndex('timestamp', 'timestamp', { unique: false });
             };
         });
     }
@@ -81,8 +92,10 @@
             const objectStore = transaction.objectStore(STORE_NAME);
             const request = objectStore.getAll();
             request.onsuccess = () => {
-                // Загружаем в Map в формате {id: timestamp}
-                favorites = new Map(request.result.map(item => [item.id, item.timestamp]));
+                favorites = new Map(request.result.map(item => [item.id, { 
+                    timestamp: item.timestamp, 
+                    rating: item.rating || 0 
+                }]));
                 resolve();
             };
         });
@@ -136,8 +149,12 @@
         card.dataset.artist = item.artist;
         card.dataset.id = item.id;
 
-        const isFavorited = favorites.has(item.id);
+        const favData = favorites.get(item.id);
+        const isFavorited = !!favData;
+        const rating = favData ? favData.rating : 0;
         
+        const uniquenessPercent = Math.round(item.uniqueness * 100);
+
         let favButtonHTML;
         if (currentView === 'favorites') {
             // В "Избранном" всегда показываем кнопку удаления (крестик)
@@ -163,10 +180,22 @@
             `;
         }
 
+        // Star rating HTML
+        let starsHTML = '';
+        for (let i = 1; i <= 5; i++) {
+            starsHTML += `<span class="star ${i <= rating ? 'active' : ''}" data-value="${i}">★</span>`;
+        }
+
         card.innerHTML = `
             <img class="card__image" src="${item.image}" alt="${item.artist}" loading="lazy" width="832" height="1216">
             <div class="card__info">
                 <p class="card__artist">${item.artist}</p>
+                <div class="star-rating" title="Rate this style">
+                    ${starsHTML}
+                </div>
+            </div>
+            <div class="uniqueness-score" title="Artistic Uniqueness (AI analyzed)">
+                ${uniquenessPercent}% Unique
             </div>
             <div class="works-count" title="Approximate number of training images for this artistic style">
                 ${item.worksCount.toLocaleString('en-US')}
@@ -174,9 +203,18 @@
             ${favButtonHTML}
         `;
 
-        // Копирование имени по клику на карточку (кроме кнопки "избранное")
+        // Обработка клика по звездам
+        card.querySelectorAll('.star').forEach(star => {
+            star.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const val = parseInt(star.dataset.value);
+                updateRating(item, val);
+            });
+        });
+
+        // Копирование имени по клику на карточку (кроме кнопки "избранное" и звезд)
         card.addEventListener('click', (e) => {
-            if (!e.target.classList.contains('favorite-button')) {
+            if (!e.target.classList.contains('favorite-button') && !e.target.classList.contains('star')) {
                 navigator.clipboard.writeText(item.artist).then(() => {
                     showToast('Artist name copied to clipboard!');
                 });
@@ -193,6 +231,60 @@
         return card;
     }
 
+    async function updateRating(item, newRating) {
+        const transaction = db.transaction(STORE_NAME, 'readwrite');
+        const store = transaction.objectStore(STORE_NAME);
+        
+        let favData = favorites.get(item.id);
+        if (!favData) {
+            // Auto-favorite if rated from gallery
+            favData = { id: item.id, timestamp: Date.now(), rating: newRating };
+            favorites.set(item.id, { timestamp: favData.timestamp, rating: newRating });
+            showToast(`Style favorited and rated ${newRating} stars`);
+        } else {
+            // Toggle rating: if clicking the same rating, reset to 0
+            const updatedRating = favData.rating === newRating ? 0 : newRating;
+            favData = { id: item.id, timestamp: favData.timestamp, rating: updatedRating };
+            favorites.set(item.id, { timestamp: favData.timestamp, rating: updatedRating });
+            showToast(`Rating updated to ${updatedRating} stars`);
+        }
+        
+        await store.put(favData);
+        
+        // Silent update: We NEVER trigger renderView() here anymore.
+        // This prevents cards from jumping around while the user is rating them.
+        const card = document.querySelector(`.card[data-id="${item.id}"]`);
+        if (card) {
+            const starContainer = card.querySelector('.star-rating');
+            if (starContainer) {
+                let starsHTML = '';
+                const currentRating = favorites.get(item.id).rating;
+                for (let i = 1; i <= 5; i++) {
+                    starsHTML += `<span class="star ${i <= currentRating ? 'active' : ''}" data-value="${i}">★</span>`;
+                }
+                starContainer.innerHTML = starsHTML;
+                // Re-attach listeners to the new star elements
+                starContainer.querySelectorAll('.star').forEach(star => {
+                    star.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const val = parseInt(star.dataset.value);
+                        updateRating(item, val);
+                    });
+                });
+            }
+            
+            // If we favorited a card in Gallery view, update the heart/star button too
+            if (currentView === 'gallery') {
+                const favButton = card.querySelector('.favorite-button');
+                if (favButton) {
+                    favButton.textContent = '★';
+                    favButton.classList.add('favorited');
+                    favButton.title = 'Remove from favorites';
+                }
+            }
+        }
+    }
+
     // --- Функции управления данными и отображением ---
 
     async function loadInitialData() {
@@ -204,7 +296,8 @@
                     artist: item.name,
                     image: `images/${item.p}/${item.id}.webp`,
                     worksCount: item.post_count,
-                    id: item.id
+                    id: item.id,
+                    uniqueness: item.uniqueness || 0
                 }));
 
                 // Создаем заранее отсортированную копию для функции jump
@@ -218,6 +311,7 @@
             styleCounter.innerHTML = `Artist-based styles: <span class="style-count-number">${allItems.length.toLocaleString('en-US')}</span>`;
 
             await loadFavoritesFromDB(); // Загружаем избранное из IndexedDB
+            updateSliderUI(); // Initialize the uniqueness slider fill and text
             renderView();
         } catch (error) {
             console.error('Failed to load gallery data:', error);
@@ -240,19 +334,33 @@
         if (sortType === 'name') {
             sortedItems.sort((a, b) => a.artist.localeCompare(b.artist) * direction);
         } else if (sortType === 'works') {
-            // Для 'works', 'desc' - это b-a, 'asc' - это a-b.
-            // direction = -1 для 'desc', поэтому (a-b) * -1 = b-a.
             sortedItems.sort((a, b) => (a.worksCount - b.worksCount) * direction);
+        } else if (sortType === 'uniqueness') {
+            sortedItems.sort((a, b) => (a.uniqueness - b.uniqueness) * direction);
+        } else if (sortType === 'rating') {
+            sortedItems.sort((a, b) => {
+                const rA = favorites.get(a.id)?.rating || 0;
+                const rB = favorites.get(b.id)?.rating || 0;
+                return (rA - rB) * direction;
+            });
         }
         
-        // 2. Фильтруем по избранному, если нужно (до поиска, чтобы поиск работал по избранным)
+        // 2. Фильтруем по избранному, если нужно
         if (currentView === 'favorites') {
             sortedItems = sortedItems.filter(item => favorites.has(item.id));
-            // Сортируем избранное по временной метке (новые сверху)
-            sortedItems.sort((a, b) => favorites.get(b.id) - favorites.get(a.id));
+            // По умолчанию для избранного - по времени (timestamp)
+            if (!sortType || (sortType === 'name' && sortDirection === 'asc' && !localStorage.getItem(SORT_TYPE_KEY))) {
+                 sortedItems.sort((a, b) => favorites.get(b.id).timestamp - favorites.get(a.id).timestamp);
+            }
         }
 
-        // 3. Фильтруем по строке поиска
+        // 3. Фильтруем по Uniqueness
+        sortedItems = sortedItems.filter(item => {
+            const val = item.uniqueness * 100;
+            return val >= uniquenessMinFilter && val <= uniquenessMaxFilter;
+        });
+
+        // 4. Фильтруем по строке поиска
         let filteredItems;
         if (searchTerm) {
             filteredItems = sortedItems.filter(item => 
@@ -411,7 +519,6 @@
         setActiveTab(tabGallery);
         favoritesControlsWrapper.style.display = 'none'; // Скрываем кнопку экспорта
         jumpControls.style.display = 'flex';
-        sortControls.style.display = 'flex';
         currentView = 'gallery';
         renderView();
 
@@ -427,7 +534,6 @@
         setActiveTab(tabFavorites);
         favoritesControlsWrapper.style.display = 'block'; // Показываем кнопку экспорта
         jumpControls.style.display = 'none';
-        sortControls.style.display = 'none'; // Скрываем сортировку для избранного
         currentView = 'favorites';
         // Сбрасываем состояние "перехода", так как он не применяется к избранному
         startIndexOffset = 0;
@@ -445,34 +551,103 @@
         renderView();
     });
 
-    // --- Сохранение избранных в файл ---
-    const saveFavoritesBtn = document.getElementById('save-favorites-btn');
-    saveFavoritesBtn.addEventListener('click', () => {
-        if (favorites.size === 0) {
-            showToast('You have no favorites to save.');
-            return;
-        }
-
-        // Собираем имена артистов, по одному на строку
-        // Сортируем по дате добавления (новые сверху) перед сохранением
-        const sortedFavoriteIds = Array.from(favorites.entries())
-            .sort(([, tsA], [, tsB]) => tsB - tsA)
-            .map(([id]) => id);
-
-        const textToSave = sortedFavoriteIds.map(id => allItems.find(item => item.id === id)?.artist)
-            .filter(Boolean).join('\n');
-        const blob = new Blob([textToSave], { type: 'text/plain' });
-        const url = URL.createObjectURL(blob);
-
+    function downloadFile(content, fileName, contentType) {
         const a = document.createElement('a');
-        a.href = url;
-        a.download = 'favorite-artists.txt';
-        document.body.appendChild(a);
+        const file = new Blob([content], { type: contentType });
+        a.href = URL.createObjectURL(file);
+        a.download = fileName;
         a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-        showToast('Favorites saved to file!');
-    });
+        URL.revokeObjectURL(a.href);
+    }
+
+    // --- Import / Export Overhaul ---
+    const exportDataBtn = document.getElementById('export-favorites-btn');
+    const importDataBtn = document.getElementById('import-favorites-btn');
+    const importInput = document.getElementById('import-favorites-input');
+    const saveTxtBtn = document.getElementById('save-favorites-txt-btn');
+
+    if (exportDataBtn) {
+        exportDataBtn.addEventListener('click', () => {
+            if (favorites.size === 0) return showToast('No favorites to export.');
+            const data = Array.from(favorites.entries()).map(([id, meta]) => ({
+                id,
+                rating: meta.rating,
+                timestamp: meta.timestamp
+            }));
+            downloadFile(JSON.stringify(data, null, 2), 'anima-styles-favorites.json', 'application/json');
+            showToast('Favorites data exported!');
+        });
+    }
+
+    if (saveTxtBtn) {
+        saveTxtBtn.addEventListener('click', () => {
+            if (favorites.size === 0) return showToast('No favorites to export.');
+            const names = currentItems.map(item => item.artist).join('\n');
+            downloadFile(names, 'favorite-artists.txt', 'text/plain');
+            showToast('Artist names exported!');
+        });
+    }
+
+    if (importDataBtn) importDataBtn.addEventListener('click', () => importInput.click());
+
+    if (importInput) {
+        importInput.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = async (event) => {
+                const content = event.target.result;
+                const isJson = file.name.toLowerCase().endsWith('.json');
+                
+                try {
+                    const transaction = db.transaction(STORE_NAME, 'readwrite');
+                    const store = transaction.objectStore(STORE_NAME);
+                    let importCount = 0;
+
+                    if (isJson) {
+                        const importedData = JSON.parse(content);
+                        if (!Array.isArray(importedData)) throw new Error('Invalid JSON format');
+                        for (const item of importedData) {
+                            if (item.id) {
+                                store.put({
+                                    id: item.id,
+                                    timestamp: item.timestamp || Date.now(),
+                                    rating: item.rating || 0
+                                });
+                                importCount++;
+                            }
+                        }
+                    } else {
+                        // Legacy .txt Import
+                        const names = content.split('\n').map(n => n.trim()).filter(Boolean);
+                        for (const name of names) {
+                            // Find the ID for this artist name
+                            const match = allItems.find(i => i.artist.toLowerCase() === name.toLowerCase());
+                            if (match) {
+                                store.put({
+                                    id: match.id,
+                                    timestamp: Date.now(),
+                                    rating: 0
+                                });
+                                importCount++;
+                            }
+                        }
+                    }
+
+                    transaction.oncomplete = async () => {
+                        await loadFavoritesFromDB();
+                        renderView();
+                        showToast(`Successfully imported ${importCount} favorites!`);
+                    };
+                } catch (err) {
+                    console.error(err);
+                    showToast('Error: Could not parse file.');
+                }
+            };
+            reader.readAsText(file);
+        });
+    }
 
     // Обработка ввода в строке поиска
     searchInput.addEventListener('input', (e) => {
@@ -590,10 +765,13 @@
         const isJumpActive = sortControls.classList.contains('disabled') && !searchTerm;
         const isSearching = searchTerm.length > 0;
 
-        // Сброс состояния для обеих кнопок
-        [sortByNameBtn, sortByWorksBtn].forEach(btn => {
-            btn.classList.remove('active');
-            btn.querySelector('.sort-arrow').textContent = '';
+        // Сброс состояния для всех кнопок
+        [sortByNameBtn, sortByWorksBtn, sortByUniquenessBtn, sortByRatingBtn].forEach(btn => {
+            if (btn) {
+                btn.classList.remove('active');
+                const arrow = btn.querySelector('.sort-arrow');
+                if (arrow) arrow.textContent = '';
+            }
         });
 
         // Блокируем сортировку и переход, если есть поисковый запрос
@@ -605,11 +783,17 @@
         searchInput.disabled = isJumpActive;
 
 
-        const activeBtn = sortType === 'name' ? sortByNameBtn : sortByWorksBtn;
-        const arrow = activeBtn.querySelector('.sort-arrow');
+        let activeBtn;
+        if (sortType === 'name') activeBtn = sortByNameBtn;
+        else if (sortType === 'works') activeBtn = sortByWorksBtn;
+        else if (sortType === 'uniqueness') activeBtn = sortByUniquenessBtn;
+        else if (sortType === 'rating') activeBtn = sortByRatingBtn;
 
-        activeBtn.classList.add('active');
-        arrow.textContent = sortDirection === 'asc' ? '▲' : '▼';
+        if (activeBtn) {
+            const arrow = activeBtn.querySelector('.sort-arrow');
+            activeBtn.classList.add('active');
+            if (arrow) arrow.textContent = sortDirection === 'asc' ? '▲' : '▼';
+        }
     }
 
     function handleSortClick(clickedType) {
@@ -636,6 +820,37 @@
 
     sortByNameBtn.addEventListener('click', () => handleSortClick('name'));
     sortByWorksBtn.addEventListener('click', () => handleSortClick('works'));
+    sortByUniquenessBtn.addEventListener('click', () => handleSortClick('uniqueness'));
+    sortByRatingBtn.addEventListener('click', () => handleSortClick('rating'));
+
+    function updateSliderUI() {
+        if (!uniquenessMinSlider || !uniquenessMaxSlider) return;
+        
+        let min = parseInt(uniquenessMinSlider.value);
+        let max = parseInt(uniquenessMaxSlider.value);
+        
+        if (min > max) {
+            min = max;
+            uniquenessMinSlider.value = min;
+        }
+        
+        uniquenessMinFilter = min;
+        uniquenessMaxFilter = max;
+        
+        uniquenessRangeText.textContent = `${min}% - ${max}%`;
+        sliderTrackActive.style.left = min + '%';
+        sliderTrackActive.style.width = (max - min) + '%';
+    }
+
+    uniquenessMinSlider.addEventListener('input', () => {
+        updateSliderUI();
+        renderView();
+    });
+
+    uniquenessMaxSlider.addEventListener('input', () => {
+        updateSliderUI();
+        renderView();
+    });
 
     // --- Конец управления сортировкой ---
 

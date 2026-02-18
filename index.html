@@ -79,11 +79,32 @@
                         Name <span class="sort-arrow"></span></button>
                     <button id="sort-by-works" class="sort-button" data-sort-by="works">
                         Works <span class="sort-arrow"></span></button>
+                    <button id="sort-by-uniqueness" class="sort-button" data-sort-by="uniqueness" title="Sort by artistic uniqueness (AI analyzed)">
+                        Unique <span class="sort-arrow"></span></button>
+                    <button id="sort-by-rating" class="sort-button" data-sort-by="rating" title="Sort by your star rating">
+                        Rating <span class="sort-arrow"></span></button>
+                </div>
+            </div>
+            <div id="uniqueness-filter-group" class="uniqueness-filter-group">
+                <div class="uniqueness-labels">
+                    <span>Uniqueness:</span>
+                    <span id="uniqueness-range-text">0% - 100%</span>
+                </div>
+                <div class="slider-container">
+                    <div class="slider-track-main"></div>
+                    <div id="slider-track-active" class="slider-track-active"></div>
+                    <input type="range" id="uniqueness-min-slider" min="0" max="100" value="0" class="input-range">
+                    <input type="range" id="uniqueness-max-slider" min="0" max="100" value="100" class="input-range">
                 </div>
             </div>
             <!-- Container for the export button, which appears only on the Favorites tab -->
             <div id="favorites-controls-wrapper" style="display: none;">
-                <button id="save-favorites-btn" class="sort-button" title="Export the names of all favorite artists to a text file (.txt)">Export Favorites (.txt)</button>
+                <div class="favorites-actions">
+                    <button id="export-favorites-btn" class="sort-button" title="Export favorites with ratings to JSON">Export Data (.json)</button>
+                    <button id="import-favorites-btn" class="sort-button" title="Import favorites from JSON or legacy .txt list">Import Data (.json/.txt)</button>
+                    <input type="file" id="import-favorites-input" style="display: none;" accept=".json,.txt">
+                    <button id="save-favorites-txt-btn" class="sort-button" title="Export names only to .txt">Export Names (.txt)</button>
+                </div>
             </div>
             <div class="jump-controls">
                 <div class="jump-wrapper"> <!-- Новый контейнер для позиционирования -->
