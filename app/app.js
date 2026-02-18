@@ -844,11 +844,17 @@
 
     uniquenessMinSlider.addEventListener('input', () => {
         updateSliderUI();
+    });
+
+    uniquenessMinSlider.addEventListener('change', () => {
         renderView();
     });
 
     uniquenessMaxSlider.addEventListener('input', () => {
         updateSliderUI();
+    });
+
+    uniquenessMaxSlider.addEventListener('change', () => {
         renderView();
     });
 
