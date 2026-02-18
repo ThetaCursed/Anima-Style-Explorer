@@ -67,24 +67,47 @@ body {
 .header {
     display: flex;
     justify-content: center;
-    margin-bottom: 30px;
-    position: relative; /* Для позиционирования .author-credit на странице About */
+    margin-bottom: 20px;
+    position: relative;
 }
 
 .controls-container {
     display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 30px;
+    background-color: var(--card-background);
+    padding: 20px;
+    border-radius: 18px;
+    border: 1px solid var(--border-color);
+    position: sticky;
+    top: 10px;
+    z-index: 100;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.controls-row {
+    display: flex;
     justify-content: space-between;
-    align-items: flex-start; /* Выравниваем по верху, чтобы элементы не растягивались по высоте */
-    margin-bottom: 20px;
-    /* flex-wrap: wrap; */ /* Убираем перенос, чтобы все было в одну строку */
+    align-items: center;
     gap: 20px;
+}
+
+.primary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 16px;
 }
 
 .search-wrapper {
     flex: 1;
     position: relative;
-    min-width: 200px; /* Минимальная ширина для поля поиска */
-    max-width: 300px; /* Ограничиваем ширину контейнера, чтобы он соответствовал инпуту */
+    max-width: 300px;
+    display: flex;
+    justify-content: flex-start;
 }
 
 .search-input {
@@ -132,9 +155,11 @@ body {
 /* --- Стили для "перехода к номеру" --- */
 .jump-controls {
     display: flex;
-    justify-content: center; /* Центрируем, чтобы выровнять с кнопками сортировки */
-    padding-top: 15px; /* Отступ сверху до инпута и кнопки */
-    border-top: 1px solid var(--border-color); /* Разделительная линия */
+    justify-content: center;
+}
+
+.jump-input {
+    max-width: 160px;
 }
 
 .jump-wrapper {
@@ -153,15 +178,19 @@ body {
 }
 
 .uniqueness-filter-group {
+    flex: 1;
     display: flex;
     flex-direction: column;
-    width: 220px;
-    gap: 8px;
+    align-items: center; /* Center the elements inside */
+    max-width: 300px;
+    gap: 6px;
+    margin: 0 auto;
 }
 
 .uniqueness-labels {
     display: flex;
     justify-content: space-between;
+    width: 100%;
     font-size: 13px;
     color: var(--secondary-text-color);
     font-weight: 600;
@@ -240,18 +269,13 @@ body {
 .sort-controls {
     display: flex;
     align-items: center;
-    justify-content: center; /* Центрируем содержимое по горизонтали */
-    position: relative; /* Это позволит нам позиционировать метку относительно этого блока */
-    /* gap убираем, так как метка больше не в потоке */
+    gap: 12px;
 }
 
 .sort-label {
     color: var(--secondary-text-color);
     font-size: 14px;
-    position: absolute; /* Вынимаем метку из потока */
-    right: 100%; /* Ставим ее слева от родительского блока (.sort-controls) */
-    margin-right: 10px; /* Добавляем отступ между меткой и кнопками */
-    white-space: nowrap; /* Запрещаем перенос текста на новую строку */
+    white-space: nowrap;
 }
 
 .sort-buttons-group {
@@ -305,13 +329,12 @@ input::-webkit-inner-spin-button {
 }
 
 .grid-controls {
+    flex: 1;
     display: flex;
-    flex-direction: column; /* Ставим элементы друг под другом */
-    align-items: flex-end; /* Выравниваем по правому краю */
-    flex: 1; /* Добавляем гибкость, чтобы выровнять центральный блок */
-    max-width: 300px; /* Ограничиваем ширину, чтобы она была симметрична блоку поиска */
-    justify-content: center; /* Центрируем по вертикали относительно других контролов */
-    gap: 10px;
+    flex-direction: column;
+    align-items: flex-end;
+    max-width: 300px;
+    gap: 6px;
     color: var(--secondary-text-color);
     font-size: 14px;
     white-space: nowrap;
@@ -443,6 +466,11 @@ input[type="range"]::-webkit-slider-thumb {
     overflow: hidden;
     text-overflow: ellipsis;
     margin-bottom: 4px;
+}
+
+#favorites-controls-wrapper {
+    display: flex !important;
+    justify-content: center;
 }
 
 .favorites-actions {

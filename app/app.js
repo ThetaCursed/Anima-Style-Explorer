@@ -311,8 +311,8 @@
             // Обновляем счетчик стилей
             styleCounter.innerHTML = `Artist-based styles: <span class="style-count-number">${allItems.length.toLocaleString('en-US')}</span>`;
 
-            await loadFavoritesFromDB(); // Загружаем избранное из IndexedDB
-            updateSliderUI(); // Initialize the uniqueness slider fill and text
+            await loadFavoritesFromDB(); 
+            updateSliderUI();
             renderView();
         } catch (error) {
             console.error('Failed to load gallery data:', error);
@@ -533,12 +533,10 @@
     tabGallery.addEventListener('click', () => {
         if (currentView === 'gallery') return;
         setActiveTab(tabGallery);
-        favoritesControlsWrapper.style.display = 'none'; // Скрываем кнопку экспорта
-        jumpControls.style.display = 'flex';
         currentView = 'gallery';
         renderView();
+        updateSliderUI(); // Ensure fill is correct after potential tab reset
 
-        // Очищаем поиск при переключении на галерею
         if (searchInput.value) {
             searchInput.value = '';
             searchInput.dispatchEvent(new Event('input', { bubbles: true }));
@@ -548,23 +546,18 @@
     tabFavorites.addEventListener('click', () => {
         if (currentView === 'favorites') return;
         setActiveTab(tabFavorites);
-        favoritesControlsWrapper.style.display = 'block'; // Показываем кнопку экспорта
-        jumpControls.style.display = 'none';
         currentView = 'favorites';
-        // Сбрасываем состояние "перехода", так как он не применяется к избранному
         startIndexOffset = 0;
         jumpInput.value = '';
-        
-        // Также сбрасываем состояние перехода и разблокируем другие контролы
-        resetJumpState(false); // false - чтобы не вызывать renderView() повторно
+        resetJumpState(false); 
 
-        // Очищаем поиск при переключении на избранное
         if (searchInput.value) {
             searchInput.value = '';
             searchInput.dispatchEvent(new Event('input', { bubbles: true }));
         }
 
         renderView();
+        updateSliderUI();
     });
 
     function downloadFile(content, fileName, contentType) {
@@ -952,6 +945,7 @@
     initDB()
         .then(() => {
             loadInitialData();
+            updateSliderUI();
         })
         .catch(err => {
             console.error(err);

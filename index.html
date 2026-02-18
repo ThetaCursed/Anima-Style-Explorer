@@ -67,24 +67,13 @@
     </header>
     
     <div id="controls-container" class="controls-container">
-        <div class="search-wrapper">
-            <input type="text" id="search-input" class="search-input" placeholder="Search by name...">
-            <button id="clear-search-btn" class="clear-input-btn" title="Clear search" style="display: none;">×</button>
-        </div>
-        <div class="sort-jump-group">
-            <div class="sort-controls">
-                <span class="sort-label">Sort by:</span> <!-- Этот текст будет слева -->
-                <div class="sort-buttons-group"> <!-- Новая обертка для кнопок -->
-                    <button id="sort-by-name" class="sort-button" data-sort-by="name">
-                        Name <span class="sort-arrow"></span></button>
-                    <button id="sort-by-works" class="sort-button" data-sort-by="works">
-                        Works <span class="sort-arrow"></span></button>
-                    <button id="sort-by-uniqueness" class="sort-button" data-sort-by="uniqueness" title="Sort by artistic uniqueness (AI analyzed)">
-                        Unique <span class="sort-arrow"></span></button>
-                    <button id="sort-by-rating" class="sort-button" data-sort-by="rating" title="Sort by your star rating">
-                        Rating <span class="sort-arrow"></span></button>
-                </div>
+        <!-- Primary Filter Row -->
+        <div class="controls-row primary-row">
+            <div class="search-wrapper">
+                <input type="text" id="search-input" class="search-input" placeholder="Search by name...">
+                <button id="clear-search-btn" class="clear-input-btn" title="Clear search" style="display: none;">×</button>
             </div>
+            
             <div id="uniqueness-filter-group" class="uniqueness-filter-group">
                 <div class="uniqueness-labels">
                     <span>Uniqueness:</span>
@@ -97,28 +86,43 @@
                     <input type="range" id="uniqueness-max-slider" min="0" max="100" value="100" class="input-range">
                 </div>
             </div>
-            <!-- Container for the export button, which appears only on the Favorites tab -->
-            <div id="favorites-controls-wrapper" style="display: none;">
-                <div class="favorites-actions">
-                    <button id="export-favorites-btn" class="sort-button" title="Export favorites with ratings to JSON">Export Data (.json)</button>
-                    <button id="import-favorites-btn" class="sort-button" title="Import favorites from JSON or legacy .txt list">Import Data (.json/.txt)</button>
-                    <input type="file" id="import-favorites-input" style="display: none;" accept=".json,.txt">
-                    <button id="save-favorites-txt-btn" class="sort-button" title="Export names only to .txt">Export Names (.txt)</button>
+
+            <div class="grid-controls">
+                <div class="slider-wrapper">
+                    <label for="grid-slider" id="grid-slider-label">Columns: <span id="grid-slider-value">5</span></label>
+                    <input type="range" id="grid-slider" min="1" max="10" value="5" title="Number of columns">
+                </div>
+                <small class="hotkey-hint" title="Use number keys 1-9 and 0 to change column count">[1-0] keys</small>
+            </div>
+        </div>
+
+        <!-- Secondary Action Row -->
+        <div class="controls-row secondary-row">
+            <div class="sort-controls">
+                <span class="sort-label">Sort:</span>
+                <div class="sort-buttons-group">
+                    <button id="sort-by-name" class="sort-button" data-sort-by="name">Name <span class="sort-arrow"></span></button>
+                    <button id="sort-by-works" class="sort-button" data-sort-by="works">Works <span class="sort-arrow"></span></button>
+                    <button id="sort-by-uniqueness" class="sort-button" data-sort-by="uniqueness" title="Artistic uniqueness">Unique <span class="sort-arrow"></span></button>
+                    <button id="sort-by-rating" class="sort-button" data-sort-by="rating" title="Star rating">Rating <span class="sort-arrow"></span></button>
                 </div>
             </div>
+
             <div class="jump-controls">
-                <div class="jump-wrapper"> <!-- Новый контейнер для позиционирования -->
-                    <input type="number" id="jump-input" class="search-input" placeholder="Jump to work count...">
+                <div class="jump-wrapper">
+                    <input type="number" id="jump-input" class="search-input jump-input" placeholder="Jump to work count...">
                     <button id="clear-jump-btn" class="clear-input-btn" title="Clear jump" style="display: none;">×</button>
                 </div>
             </div>
-        </div>
-        <div class="grid-controls">
-            <div class="slider-wrapper">
-                <label for="grid-slider" id="grid-slider-label">Columns: <span id="grid-slider-value">5</span></label>
-                <input type="range" id="grid-slider" min="1" max="10" value="5" title="Number of columns">
+
+            <div id="favorites-controls-wrapper" style="display: none;">
+                <div class="favorites-actions">
+                    <button id="export-favorites-btn" class="sort-button">Export (.json)</button>
+                    <button id="import-favorites-btn" class="sort-button">Import (.json/.txt)</button>
+                    <input type="file" id="import-favorites-input" style="display: none;" accept=".json,.txt">
+                    <button id="save-favorites-txt-btn" class="sort-button">Export (.txt)</button>
+                </div>
             </div>
-            <small class="hotkey-hint" title="Use number keys 1-9 and 0 to change column count">[1-0] keys</small>
         </div>
     </div>
 
