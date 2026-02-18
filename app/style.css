@@ -396,6 +396,14 @@ input[type="range"]::-webkit-slider-thumb {
     display: grid;
     grid-template-columns: repeat(var(--grid-columns, 5), 1fr);
     gap: 20px;
+    content-visibility: auto;
+    contain-intrinsic-size: auto 1200px;
+}
+
+#infinite-scroll-sentinel {
+    grid-column: 1 / -1;
+    height: 20px;
+    width: 100%;
 }
 
 .card {

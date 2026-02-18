@@ -43,6 +43,7 @@
     let isLoading = false;
     let sortUpdateTimeout; // Переменная для таймера сохранения сортировки
     let jumpTimeout; // Таймер для отложенного перехода
+    let observer; // Intersection Observer
     const SORT_TYPE_KEY = 'sortType';
     const SORT_DIRECTION_KEY = 'sortDirection';
 
@@ -360,18 +361,18 @@
             return val >= uniquenessMinFilter && val <= uniquenessMaxFilter;
         });
 
-        // 4. Фильтруем по строке поиска
+        // 4. Фильтруем по строке поиска (Fuzzy-ish simple match)
         let filteredItems;
         if (searchTerm) {
+            const term = searchTerm.toLowerCase().replace(/\s/g, '');
             filteredItems = sortedItems.filter(item => 
-                item.artist.toLowerCase().includes(searchTerm)
+                item.artist.toLowerCase().replace(/\s/g, '').includes(term)
             );
         } else {
             filteredItems = sortedItems;
         }
 
-        // 4. Применяем смещение для "перехода к номеру" (только для галереи)
-        // Итоговый массив для отображения
+        // 5. Применяем смещение для "перехода к номеру" (только для галереи)
         currentItems = filteredItems.slice(startIndexOffset);
 
 
@@ -381,47 +382,69 @@
         }
         
         loadMoreItems();
+        setupObserver();
     }
 
     function loadMoreItems() {
         if (isLoading) return;
+        
+        const start = currentPage * itemsPerPage;
+        if (start >= currentItems.length) {
+            // No more items, remove sentinel
+            const sentinel = document.getElementById('infinite-scroll-sentinel');
+            if (sentinel) sentinel.remove();
+            return;
+        }
+
         isLoading = true;
         loader.style.display = 'block';
 
-        // Имитация задержки сети для демонстрации загрузчика
-        setTimeout(() => {
-            const start = currentPage * itemsPerPage;
-            const end = start + itemsPerPage;
-            const itemsToLoad = currentItems.slice(start, end);
+        const end = start + itemsPerPage;
+        const itemsToLoad = currentItems.slice(start, end);
+        
+        const fragment = document.createDocumentFragment();
+        itemsToLoad.forEach(item => {
+            fragment.appendChild(createCard(item));
+        });
+        
+        // Remove sentinel before appending new items to ensure it stays at the bottom
+        const sentinel = document.getElementById('infinite-scroll-sentinel');
+        if (sentinel) sentinel.remove();
+        
+        galleryContainer.appendChild(fragment);
 
-            itemsToLoad.forEach(item => {
-                const card = createCard(item);
-                galleryContainer.appendChild(card);
-            });
+        currentPage++;
+        isLoading = false;
+        loader.style.display = 'none';
+        
+        // Re-setup sentinel at the new bottom
+        setupObserver();
 
-            currentPage++;
-            isLoading = false;
-            loader.style.display = 'none';
-
-            // Если больше нечего загружать, скрываем лоадер навсегда для этой сессии
-            if (currentPage * itemsPerPage >= currentItems.length) {
-                loader.style.display = 'none';
-            } else {
-                // Проверяем, нужно ли загрузить еще, если контент не заполняет экран
-                checkAndLoadMoreIfContentDoesNotFillScreen();
-            }
-        }, 500);
-    }
-
-    // --- Функции-помощники ---
-
-    function checkAndLoadMoreIfContentDoesNotFillScreen() {
-        const hasScrollbar = document.body.scrollHeight > window.innerHeight;
-        const hasMoreItems = currentPage * itemsPerPage < currentItems.length;
-        if (!isLoading && !hasScrollbar && hasMoreItems) {
+        if (galleryContainer.scrollHeight <= window.innerHeight && (currentPage * itemsPerPage < currentItems.length)) {
             loadMoreItems();
         }
     }
+
+    function setupObserver() {
+        if (observer) observer.disconnect();
+        
+        let sentinel = document.getElementById('infinite-scroll-sentinel');
+        if (!sentinel) {
+            sentinel = document.createElement('div');
+            sentinel.id = 'infinite-scroll-sentinel';
+        }
+        galleryContainer.appendChild(sentinel);
+
+        observer = new IntersectionObserver((entries) => {
+            if (entries[0].isIntersecting && !isLoading) {
+                loadMoreItems();
+            }
+        }, { rootMargin: '800px' }); // Increased margin for smoother loading
+
+        observer.observe(sentinel);
+    }
+
+    // --- Функции-помощники ---
 
     async function toggleFavorite(item, button) {
         const transaction = db.transaction(STORE_NAME, 'readwrite');
@@ -499,13 +522,6 @@
             scrollToTopBtn.classList.add('visible');
         } else {
             scrollToTopBtn.classList.remove('visible');
-        }
-
-        // Проверяем, достигли ли мы конца страницы
-        if (!isLoading && (window.innerHeight + window.scrollY) >= document.body.offsetHeight - 200) {
-            if (currentPage * itemsPerPage < currentItems.length) {
-                loadMoreItems();
-            }
         }
     });
 
