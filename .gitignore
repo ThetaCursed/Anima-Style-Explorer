@@ -3,4 +3,6 @@ Thumbs.db
 .log
 node_modules
 .vscode
-*.bat
+venv/
+.torch_config
+style_analysis.json
