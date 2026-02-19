@@ -5,6 +5,7 @@
     --secondary-text-color: #8e8e93;
     --accent-color: #0a84ff;
     --border-color: #3a3a3c;
+    --global-border-radius: 14px; /* Глобальная переменная для скругления */
 }
 
 * {
@@ -58,8 +59,8 @@ body {
     font-weight: 600;
     color: var(--text-color);
     background-color: var(--border-color);
-    padding: 3px 8px;
-    border-radius: 8px;
+    padding: 4px 10px;
+    border-radius: var(--global-border-radius);
     margin-left: 6px;
     user-select: none;
 }
@@ -81,98 +82,96 @@ body {
 }
 
 .search-wrapper {
-    flex: 1;
-    position: relative;
+    flex: 1; /* Позволяем блоку поиска занимать доступное пространство в центре */
     min-width: 200px; /* Минимальная ширина для поля поиска */
-    max-width: 300px; /* Ограничиваем ширину контейнера, чтобы он соответствовал инпуту */
+    max-width: 280px; /* Уменьшаем ширину для лучшей иерархии */
+    display: flex;
+    flex-direction: column; /* Ставим элементы друг под другом */
+    /* Новые стили для создания единого блока */
+    background-color: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: var(--global-border-radius);
+    overflow: hidden; /* Скрываем углы дочерних элементов */
 }
 
 .search-input {
     width: 100%;
-    padding: 10px 45px 10px 15px; /* Добавляем отступ справа для крестика */
-    max-width: 300px; /* Ограничим максимальную ширину поля поиска */
-    background-color: var(--card-background);
-    border: 1px solid var(--border-color);
-    border-radius: 10px;
+    padding: 12px 45px; /* Симметричные отступы для центрирования */
+    background-color: transparent; /* Убираем фон */
+    border: none; /* Убираем рамку */
+    border-radius: 0; /* Убираем скругление */
     color: var(--text-color);
     font-size: 14px;
     font-family: inherit;
-    text-align: left; /* Выравнивание по левому краю по умолчанию */
+    text-align: center;
 }
 
 .search-input::placeholder {
     color: var(--secondary-text-color);
 }
 
-.clear-input-btn { /* Переименовываем класс для универсальности */
+.search-input-container {
+    position: relative; /* Контейнер для позиционирования кнопки */
+    border-bottom: 1px solid var(--border-color); /* Разделитель между полями */
+}
+
+.jump-controls {
+    position: relative; /* Контейнер для позиционирования кнопки */
+}
+
+.clear-input-btn {
     position: absolute;
-    right: 15px; /* Корректируем позицию с учетом нового padding */
+    right: 12px; /* Возвращаем стандартный отступ */
     top: 50%;
     transform: translateY(-50%);
     width: 28px;
     height: 28px;
-    background-color: var(--border-color);
+    background-color: #48484a; /* Делаем фон заметнее */
     border: none;
     border-radius: 50%;
-    color: var(--secondary-text-color);
+    color: #e5e5ea; /* Делаем крестик светлее */
     font-size: 20px;
     line-height: 1;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background-color 0.2s, color 0.2s;
+    transition: background-color 0.2s, color 0.2s, transform 0.2s;
 }
 
 .clear-input-btn:hover {
-    background-color: #4a4a4c;
+    background-color: #58585a;
     color: var(--text-color);
-}
-
-/* --- Стили для "перехода к номеру" --- */
-.jump-controls {
-    display: flex;
-    justify-content: center; /* Центрируем, чтобы выровнять с кнопками сортировки */
-    padding-top: 15px; /* Отступ сверху до инпута и кнопки */
-    border-top: 1px solid var(--border-color); /* Разделительная линия */
-}
-
-.jump-wrapper {
-    position: relative;
+    transform: translateY(-50%) scale(1.1); /* Добавляем эффект при наведении */
 }
 
 .jump-controls .search-input {
-    max-width: 190px; /* Увеличиваем поле ввода, чтобы помещался placeholder */
+    width: 100%; /* Растягиваем на всю ширину */
     align-items: center;
     text-align: center; /* Центрируем текст для поля перехода на всех устройствах */
 }
 
 .search-input:focus {
     outline: none;
-    border-color: var(--accent-color);
 }
 
 .sort-jump-group {
     display: flex;
     flex-direction: column;
-    gap: 15px; /* Увеличиваем отступ между сортировкой и переходом */    
-    align-items: center; /* Центрируем дочерние блоки (сортировку и переход) */
+    gap: 15px;
+    width: 215px; /* Возвращаем фиксированную ширину, равную правому блоку */
 }
 
 .sort-controls {
     display: flex;
     align-items: center;
     justify-content: center; /* Центрируем содержимое по горизонтали */
-    position: relative; /* Это позволит нам позиционировать метку относительно этого блока */
-    /* gap убираем, так как метка больше не в потоке */
+    gap: 10px; /* Возвращаем отступ между меткой и кнопками */
 }
 
 .sort-label {
     color: var(--secondary-text-color);
     font-size: 14px;
-    position: absolute; /* Вынимаем метку из потока */
-    right: 100%; /* Ставим ее слева от родительского блока (.sort-controls) */
-    margin-right: 10px; /* Добавляем отступ между меткой и кнопками */
     white-space: nowrap; /* Запрещаем перенос текста на новую строку */
 }
 
@@ -188,8 +187,8 @@ body {
     background-color: var(--card-background);
     color: var(--text-color);
     border: 1px solid var(--border-color);
-    border-radius: 10px;
-    padding: 9px 12px;
+    border-radius: var(--global-border-radius);
+    padding: 10px 14px;
     font-size: 14px;
     font-family: inherit;
     cursor: pointer;
@@ -221,7 +220,8 @@ input::-webkit-inner-spin-button {
 
 .search-wrapper.disabled,
 .sort-controls.disabled,
-.jump-controls.disabled {
+.jump-controls.disabled,
+.search-input-container.disabled { /* Добавляем этот селектор */
     opacity: 0.5;
     pointer-events: none;
 }
@@ -230,8 +230,7 @@ input::-webkit-inner-spin-button {
     display: flex;
     flex-direction: column; /* Ставим элементы друг под другом */
     align-items: flex-end; /* Выравниваем по правому краю */
-    flex: 1; /* Добавляем гибкость, чтобы выровнять центральный блок */
-    max-width: 300px; /* Ограничиваем ширину, чтобы она была симметрична блоку поиска */
+    width: 215px; /* Задаем фиксированную ширину, чтобы соответствовать левому блоку */
     justify-content: center; /* Центрируем по вертикали относительно других контролов */
     gap: 10px;
     color: var(--secondary-text-color);
@@ -250,8 +249,8 @@ input::-webkit-inner-spin-button {
     font-weight: 600;
     color: var(--text-color);
     background-color: var(--border-color);
-    padding: 4px 8px;
-    border-radius: 6px;
+    padding: 4px 10px;
+    border-radius: calc(var(--global-border-radius) / 3); /* Маленькое скругление */
     user-select: none; /* Предотвращаем выделение текста */
 }
 
@@ -266,8 +265,8 @@ input[type="range"] {
     appearance: none;
     width: 120px;
     height: 6px;
-    background: var(--border-color);
-    border-radius: 3px;
+    background: var(--card-background);
+    border-radius: calc(var(--global-border-radius) / 4);
     outline: none;
     cursor: pointer;
 }
@@ -284,7 +283,7 @@ input[type="range"]::-webkit-slider-thumb {
 .tabs {
     display: flex;
     background-color: var(--card-background);
-    border-radius: 10px;
+    border-radius: var(--global-border-radius);
 }
 .tabs .author-credit {
     position: absolute;
@@ -300,7 +299,7 @@ input[type="range"]::-webkit-slider-thumb {
     border: none;
     background-color: transparent;
     color: var(--secondary-text-color);
-    border-radius: 8px;
+    border-radius: calc(var(--global-border-radius) - 4px); /* Чуть меньше основного для вложенности */
     cursor: pointer;
     transition: all 0.3s ease;
     text-decoration: none; /* Убираем подчеркивание у ссылки */
@@ -319,7 +318,7 @@ input[type="range"]::-webkit-slider-thumb {
 
 .card {
     background-color: var(--card-background);
-    border-radius: 18px;
+    border-radius: var(--global-border-radius);
     overflow: hidden;
     cursor: pointer;
     position: relative;
@@ -396,8 +395,8 @@ input[type="range"]::-webkit-slider-thumb {
     min-width: 36px; /* Минимальная ширина равна высоте, чтобы сохранять круг */
     height: 36px;
     padding: 0 6px; /* Добавляем отступы по бокам для текста */
-    background-color: rgba(0, 0, 0, 0.5);
-    border-radius: 18px; /* Половина высоты для создания "пилюли" */
+    background-color: rgba(0, 0, 0, 0.6);
+    border-radius: var(--global-border-radius); /* Половина высоты для создания "пилюли" */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -435,8 +434,8 @@ input[type="range"]::-webkit-slider-thumb {
     transform: translateX(-50%);
     background-color: #333;
     color: white;
-    padding: 12px 24px;
-    border-radius: 8px;
+    padding: 14px 24px;
+    border-radius: var(--global-border-radius);
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.3s, visibility 0.3s;
@@ -494,12 +493,19 @@ input[type="range"]::-webkit-slider-thumb {
 @media (max-width: 992px) {
     .controls-container {
         flex-wrap: wrap; /* Позволяем контролам переноситься */
-        justify-content: center;
+        justify-content: center; /* Центрируем содержимое */
+    }
+    .sort-jump-group {
+        order: 2; /* Ставим блок с фильтрами вторым */
+        flex-basis: 100%; /* Заставляем блок занять всю ширину для центрирования */
+        width: auto; /* Убираем фиксированную ширину, чтобы он мог центрироваться */
+        align-items: center; /* Центрируем его содержимое */
     }
     .search-wrapper {
+        order: 1; /* Ставим блок поиска первым */
         flex-basis: 100%; /* Поиск занимает всю ширину */
-        margin-bottom: 15px;
-        display: flex; /* Добавляем flex для выравнивания */
+        margin-bottom: 10px; /* Уменьшаем отступ, чтобы фильтры были ближе */
+        display: flex;
         justify-content: center; /* Центрируем поле поиска */
     }
     .search-input {
@@ -513,6 +519,10 @@ input[type="range"]::-webkit-slider-thumb {
     }
     /* Скрываем слайдер на планшетах и телефонах */
     .grid-controls { display: none; }
+    /* Скрываем текст "Sort by:" на мобильных, чтобы кнопки были по центру */
+    .sort-label {
+        display: none;
+    }
 }
 @media (max-width: 768px) {
     body { padding: 10px; }
@@ -561,8 +571,8 @@ input[type="range"]::-webkit-slider-thumb {
     max-width: 800px;
     margin: 30px auto;
     padding: 20px;
-    background-color: var(--card-background);
-    border-radius: 18px;
+    background-color: var(--card-background); /* Используем фон карточки для консистентности */
+    border-radius: var(--global-border-radius);
     line-height: 1.7;
     box-sizing: border-box; /* Чтобы padding не увеличивал max-width */
 }
@@ -606,18 +616,18 @@ input[type="range"]::-webkit-slider-thumb {
 
 /* --- Support Widget --- */
 .support-widget {
-    /* Убираем position: fixed и связанные стили */
-    max-width: 320px; /* Ограничиваем максимальную ширину */
+    max-width: 320px; /* Немного увеличим ширину для баланса */
     width: 100%;
-    margin: 0 auto 16px; /* Центрируем и добавляем отступ снизу */
-    background-color: var(--card-background);
-    border: 1px solid var(--border-color);
-    border-radius: 18px;
-    padding: 14px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    margin: 24px auto 16px; /* Добавляем отступ сверху, чтобы отделить от заголовка */
+    background: rgba(44, 44, 46, 0.7); /* Полупрозрачный фон для эффекта стекла */
+    border: 1px solid rgba(255, 255, 255, 0.1); /* Тонкая светлая рамка */
+    border-radius: var(--global-border-radius); /* Единый радиус скругления */
+    padding: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
     position: relative; /* Для позиционирования крестика */
     transition: opacity 0.3s, transform 0.3s, max-height 0.3s ease-out;
-    transform: translateY(0); /* Сбрасываем transform */
+    backdrop-filter: blur(10px); /* Эффект размытия */
+    -webkit-backdrop-filter: blur(10px);
 }
 
 .support-widget.hidden {
@@ -625,76 +635,94 @@ input[type="range"]::-webkit-slider-thumb {
 }
 
 .support-widget__close {
-    /* Убираем абсолютное позиционирование */
-    flex-shrink: 0; /* Запрещаем сжиматься */
-    width: 36px;
-    height: 36px;
-    background: rgba(58, 58, 60, 0.6); /* Используем цвет --border-color с прозрачностью */
+    flex-shrink: 0; /* Запрещаем кнопке сжиматься */
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 10px;
-    color: rgba(242, 242, 247, 0.8); /* Используем --text-color с прозрачностью */
-    font-size: 22px;
+    border-radius: var(--global-border-radius);
+    color: var(--secondary-text-color);
+    font-size: 20px;
     line-height: 1;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background 0.2s, color 0.2s, border-color 0.2s;
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px); /* Для Safari */
+    transition: background-color 0.2s, color 0.2s;
 }
 
 .support-widget__close:hover {
-    background: rgba(58, 58, 60, 0.9);
+    background-color: rgba(255, 255, 255, 0.2);
     color: var(--text-color);
 }
 
-.support-widget__top-row {
+.support-widget__actions {
     display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 14px;
+    gap: 8px;
+}
+
+.support-widget__goal-text {
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--secondary-text-color);
+    text-align: center;
+    margin-top: 14px; /* Отступ от прогресс-бара */
+    margin-bottom: 16px; /* Увеличенный отступ до кнопки для "воздуха" */
 }
 
 .support-widget__button {
     display: block;
-    flex-grow: 1; /* Кнопка займет все доступное место */
-    padding: 0 10px;
-    height: 36px;
-    background: rgba(10, 132, 255, 0.25); /* Полупрозрачный синий, не слишком яркий */
-    color: rgba(242, 242, 247, 0.9); /* Можно сделать текст чуть ярче */
+    flex-grow: 1;
+    width: auto;
+    height: 40px; /* Возвращаем стандартную высоту */
+    background: rgba(10, 132, 255, 0.45); /* Более насыщенный полупрозрачный фон */
+    color: var(--text-color);
     text-align: center;
     text-decoration: none;
     font-size: 15px;
     font-weight: 600;
-    border: 1px solid rgba(10, 132, 255, 0.3); /* Рамка в тон кнопке */
-    border-radius: 10px;
-    transition: background 0.2s, color 0.2s, border-color 0.2s;
-    line-height: 36px; /* Вертикально центрируем текст */
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px); /* Для Safari */
+    border: 1px solid rgba(10, 132, 255, 0.5);
+    border-radius: var(--global-border-radius); /* Единый радиус скругления */
+    transition: background-color 0.2s, transform 0.1s;
+    line-height: 40px; /* Вертикально центрируем текст */
+    cursor: pointer;
 }
 
 .support-widget__button:hover {
-    background: rgba(10, 132, 255, 0.4); /* Делаем фон чуть насыщеннее при наведении */
-    border-color: rgba(10, 132, 255, 0.6);
-    color: var(--text-color);
+    background-color: rgba(10, 132, 255, 0.4); /* Делаем фон чуть насыщеннее при наведении */
+}
+
+.support-widget__button:active {
+    transform: scale(0.98); /* Легкое нажатие */
 }
 
 .progress-bar-container {
     width: 100%;
+    margin-bottom: 12px; /* Отступ до текста */
 }
 
 .progress-bar__labels {
     display: flex;
     justify-content: space-between;    
-    margin-bottom: 6px; /* Увеличиваем отступ */
+    margin-bottom: 8px;
 }
 
 .progress-label-group {
     display: flex;
     align-items: baseline;
-    gap: 4px;
+    gap: 5px;
+}
+
+.progress-label-group--center {
+    justify-content: center; /* Центрируем текст внутри блока */
+    flex-grow: 1; /* Позволяем блоку занять доступное пространство */
+}
+
+.progress-label-group--center .progress-label {
+    font-size: 15px; /* Увеличиваем размер шрифта */
+    font-weight: 600; /* Делаем шрифт полужирным */
+    color: var(--text-color); /* Используем основной цвет текста */
+    letter-spacing: 0.5px; /* Добавляем немного пространства между буквами */
 }
 
 .progress-label {
@@ -704,25 +732,45 @@ input[type="range"]::-webkit-slider-thumb {
 
 .progress-bar__labels #progress-current,
 .progress-bar__labels #progress-target {
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 700; /* Делаем текущее число жирным */
     color: var(--text-color);
 }
 
 .progress-bar__track {
     width: 100%;
-    height: 6px;
-    background-color: var(--border-color);
-    border-radius: 3px;
+    height: 8px; /* Более изящный прогресс-бар */
+    background-color: rgba(0, 0, 0, 0.2); /* Едва заметный фон */
+    border-radius: var(--global-border-radius); /* Единый радиус скругления */
     overflow: hidden;
 }
 
 .progress-bar__fill {
     height: 100%;
+    position: relative; /* Для позиционирования псевдо-элемента */
+    overflow: hidden; /* Скрываем анимацию, выходящую за пределы */
     width: 0; /* Будет установлено через JS */
-    background-color: var(--accent-color);
-    border-radius: 3px;
+    background-color: var(--accent-color); /* Сплошной акцентный цвет */
+    border-radius: var(--global-border-radius); /* Единый радиус скругления */
     transition: width 0.5s ease-out;
+}
+
+.progress-bar__fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.3) 50%, rgba(255, 255, 255, 0) 100%);
+    transform: translateX(-100%);
+    animation: progress-wave 1.8s ease-in-out infinite;
+}
+
+@keyframes progress-wave {
+    0% { transform: translateX(-100%); }
+    60% { transform: translateX(100%); }
+    100% { transform: translateX(100%); }
 }
 
 /* --- Author Credit --- */
