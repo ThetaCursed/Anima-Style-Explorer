@@ -521,11 +521,6 @@
         }
     });
 
-    // Скрываем клавиатуру на мобильных после завершения ввода (нажатия "Готово" или "Поиск")
-    searchInput.addEventListener('change', (e) => {
-        e.target.blur();
-    });
-
     // --- Логика перехода к номеру ---
     function handleJump(isReset = false) {
         const targetWorksCount = parseInt(jumpInput.value, 10);
