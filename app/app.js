@@ -614,7 +614,9 @@
         updateControlsState(); // Обновляем состояние контролов при каждом вводе
 
         clearTimeout(jumpTimeout); // Сбрасываем таймер при каждом вводе
-        jumpTimeout = setTimeout(() => handleJump(), 800); // Задержка 800мс
+        if (jumpInput.value.trim()) { // Запускаем таймер только если в поле что-то есть
+            jumpTimeout = setTimeout(() => handleJump(), 800); // Задержка 800мс
+        }
     });
 
     clearJumpBtn.addEventListener('click', () => resetJumpState());
