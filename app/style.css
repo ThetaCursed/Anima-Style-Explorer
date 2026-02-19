@@ -218,6 +218,13 @@ input::-webkit-inner-spin-button {
   margin: 0;
 }
 
+/* Убираем стандартный крестик очистки в input[type=search] для Chrome, Safari, Edge */
+input[type="search"]::-webkit-search-decoration,
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-results-button,
+input[type="search"]::-webkit-search-results-decoration {
+  -webkit-appearance: none;
+}
 .search-wrapper.disabled,
 .sort-controls.disabled,
 .jump-controls.disabled,
