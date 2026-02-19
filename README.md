@@ -12,7 +12,7 @@ The **Anima 2B Style Explorer** is a specialized tool for AI artists and prompt 
 Instead of guessing, you can now visually verify every style before you hit "Generate".
 
 ## ✨ Current Status: Phase 2
-- **Current Library:** 5,000+ artist previews.
+- **Current Library:** 7,000+ artist previews.
 - **Roadmap:** Expanding to a comprehensive database of 20,000+ artist tags.
 
 ## 🛠️ Key Features
