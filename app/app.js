@@ -33,6 +33,8 @@
     let sortDirection = 'desc'; // 'asc' or 'desc'
     let isLoading = false;
     let sortUpdateTimeout; // Переменная для таймера сохранения сортировки
+    let previousSortType = null; // Для восстановления сортировки после "Jump"
+    let previousSortDirection = null; // Для восстановления сортировки после "Jump"
     let jumpTimeout; // Таймер для отложенного перехода
     const SORT_TYPE_KEY = 'sortType';
     const SORT_DIRECTION_KEY = 'sortDirection';
@@ -526,6 +528,12 @@
             return;
         }
 
+        // Сохраняем текущую сортировку, если это первый ввод в поле Jump
+        if (previousSortType === null) {
+            previousSortType = sortType;
+            previousSortDirection = sortDirection;
+        }
+
         const foundIndex = itemsSortedByWorks.findIndex(item => item.worksCount <= targetWorksCount);
 
         if (foundIndex === -1) {
@@ -549,14 +557,26 @@
         
 
         renderView();
+
+        // Скрываем клавиатуру на мобильных после успешного перехода
+        if (window.innerWidth <= 768) {
+            jumpInput.blur();
+        }
     }
 
     function resetJumpState(shouldRender = true) {
-        // Только если поле ввода действительно пустое, сбрасываем состояние
-        if (!jumpInput.value) {
-            startIndexOffset = 0;
-            updateControlsState(); // Обновляем состояние контролов
+        startIndexOffset = 0;
+
+        // Восстанавливаем предыдущую сортировку, если она была сохранена
+        if (previousSortType !== null) {
+            sortType = previousSortType;
+            sortDirection = previousSortDirection;
+            previousSortType = null; // Сбрасываем сохраненное состояние
+            previousSortDirection = null;
         }
+
+        updateSortButtonsUI(); // Обновляем UI кнопок сортировки
+        updateControlsState(); // Обновляем состояние контролов
 
 
         jumpInput.value = ''; // Очищаем поле только после всех операций
@@ -574,9 +594,6 @@
         if (e.key === 'Enter') {
             clearTimeout(jumpTimeout); // Отменяем предыдущий таймер, если есть
             handleJump();
-            if (window.innerWidth <= 768) {
-                e.target.blur(); // Скрываем клавиатуру на мобильных
-            }
         }
     });
 
