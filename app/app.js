@@ -515,7 +515,7 @@
 
     // Скрываем клавиатуру на мобильных при нажатии Enter
     searchInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' && window.innerWidth <= 768) {
+        if (e.key === 'Enter' && window.innerWidth <= 992) {
             e.target.blur();
         }
     });
@@ -559,7 +559,7 @@
         renderView();
 
         // Скрываем клавиатуру на мобильных после успешного перехода
-        if (window.innerWidth <= 768) {
+        if (window.innerWidth <= 992) {
             jumpInput.blur();
         }
     }
