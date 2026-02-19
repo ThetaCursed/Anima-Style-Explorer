@@ -26,7 +26,6 @@
     const searchWrapper = document.querySelector('.search-wrapper');
     const sortControls = document.querySelector('.sort-controls');
     const clearSearchBtn = document.getElementById('clear-search-btn');
-
     let allItems = [];
     let itemsSortedByWorks = []; // Новый массив для быстрого поиска по работам
     let favorites = new Map(); // Используем Map для хранения {id: {timestamp, rating}}
@@ -39,9 +38,11 @@
     let uniquenessMinFilter = 0;
     let uniquenessMaxFilter = 100;
     let sortType = 'name'; // 'name' or 'works'
-    let sortDirection = 'asc'; // 'asc' or 'desc'
+    let sortDirection = 'desc'; // 'asc' or 'desc'
     let isLoading = false;
     let sortUpdateTimeout; // Переменная для таймера сохранения сортировки
+    let previousSortType = null; // Для восстановления сортировки после "Jump"
+    let previousSortDirection = null; // Для восстановления сортировки после "Jump"
     let jumpTimeout; // Таймер для отложенного перехода
     let observer; // Intersection Observer
     const SORT_TYPE_KEY = 'sortType';
@@ -513,6 +514,21 @@
         activeTab.classList.add('active');
     }
 
+    /**
+     * Централизованная функция для управления состоянием (включено/выключено) всех контролов.
+     */
+    function updateControlsState() {
+        const isSearchingByName = searchInput.value.trim().length > 0;
+        const isJumpingByCount = jumpInput.value.trim().length > 0;
+
+        // Блокируем сортировку, если активен любой из поисков
+        sortControls.classList.toggle('disabled', isSearchingByName || isJumpingByCount);
+        // Блокируем "Jump", если идет поиск по имени
+        jumpControls.classList.toggle('disabled', isSearchingByName);
+        // Блокируем поиск по имени, если идет поиск по "Jump"
+        searchInput.parentElement.classList.toggle('disabled', isJumpingByCount);
+    }
+
     // --- Обработчики событий ---
 
     // Появление/скрытие кнопки "Наверх"
@@ -664,16 +680,13 @@
         const isSearching = newSearchTerm.length > 0;
         clearSearchBtn.style.display = isSearching ? 'flex' : 'none';
 
-        // Блокируем сортировку и переход, если есть поисковый запрос
-        sortControls.classList.toggle('disabled', isSearching);
-        jumpControls.classList.toggle('disabled', isSearching);
-
         // Если пользователь очистил поиск, сбрасываем смещение от "перехода"
         if (searchTerm.length > 0 && !isSearching) {
             startIndexOffset = 0;
         }
 
         searchTerm = newSearchTerm;
+        updateControlsState(); // Обновляем состояние контролов
         renderView();
     });
     
@@ -686,7 +699,8 @@
 
     // Скрываем клавиатуру на мобильных при нажатии Enter
     searchInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' && window.innerWidth <= 768) {
+        if (e.key === 'Enter' && window.innerWidth <= 992) {
+            e.preventDefault(); // Предотвращаем стандартное поведение (например, отправку формы)
             e.target.blur();
         }
     });
@@ -699,6 +713,12 @@
             return;
         }
 
+        // Сохраняем текущую сортировку, если это первый ввод в поле Jump
+        if (previousSortType === null) {
+            previousSortType = sortType;
+            previousSortDirection = sortDirection;
+        }
+
         const foundIndex = itemsSortedByWorks.findIndex(item => item.worksCount <= targetWorksCount);
 
         if (foundIndex === -1) {
@@ -708,12 +728,11 @@
 
         // Блокируем другие контролы, ТОЛЬКО ЕСЛИ переход успешен
         if (foundIndex !== -1) {
-            sortControls.classList.add('disabled');
-            searchWrapper.classList.add('disabled');
-            searchInput.disabled = true;
             searchInput.value = ''; // Очищаем поле поиска
             searchTerm = ''; // Сбрасываем поисковый запрос
+            updateControlsState(); // Обновляем состояние контролов
         }
+
         // Устанавливаем смещение точно на найденный индекс, без запаса
         startIndexOffset = foundIndex;
         
@@ -723,15 +742,27 @@
         
 
         renderView();
+
+        // Скрываем клавиатуру на мобильных после успешного перехода
+        if (window.innerWidth <= 992) {
+            jumpInput.blur();
+        }
     }
 
     function resetJumpState(shouldRender = true) {
         startIndexOffset = 0;
 
-        // Разблокируем контролы
-        sortControls.classList.remove('disabled');
-        searchWrapper.classList.remove('disabled');
-        searchInput.disabled = false;
+        // Восстанавливаем предыдущую сортировку, если она была сохранена
+        if (previousSortType !== null) {
+            sortType = previousSortType;
+            sortDirection = previousSortDirection;
+            previousSortType = null; // Сбрасываем сохраненное состояние
+            previousSortDirection = null;
+        }
+
+        updateSortButtonsUI(); // Обновляем UI кнопок сортировки
+        updateControlsState(); // Обновляем состояние контролов
+
 
         jumpInput.value = ''; // Очищаем поле только после всех операций
         if (shouldRender) {
@@ -748,9 +779,6 @@
         if (e.key === 'Enter') {
             clearTimeout(jumpTimeout); // Отменяем предыдущий таймер, если есть
             handleJump();
-            if (window.innerWidth <= 768) {
-                e.target.blur(); // Скрываем клавиатуру на мобильных
-            }
         }
     });
 
@@ -763,8 +791,12 @@
             resetJumpState();
         }
 
+        updateControlsState(); // Обновляем состояние контролов при каждом вводе
+
         clearTimeout(jumpTimeout); // Сбрасываем таймер при каждом вводе
-        jumpTimeout = setTimeout(() => handleJump(), 800); // Задержка 800мс
+        if (jumpInput.value.trim()) { // Запускаем таймер только если в поле что-то есть
+            jumpTimeout = setTimeout(() => handleJump(), 800); // Задержка 800мс
+        }
     });
 
     clearJumpBtn.addEventListener('click', () => resetJumpState());
@@ -783,14 +815,8 @@
             }
         });
 
-        // Блокируем сортировку и переход, если есть поисковый запрос
-        sortControls.classList.toggle('disabled', isSearching || isJumpActive);
-        jumpControls.classList.toggle('disabled', isSearching);
-
-        // Блокируем поиск, если активен переход
-        searchWrapper.classList.toggle('disabled', isJumpActive);
-        searchInput.disabled = isJumpActive;
-
+        // Обновляем состояние блокировки контролов
+        updateControlsState();
 
         let activeBtn;
         if (sortType === 'name') activeBtn = sortByNameBtn;
@@ -972,7 +998,7 @@
 
         // Обновляем прогресс-бар
         const currentArtists = allItems.length;
-        const targetArtists = 8000;
+        const targetArtists = 20000;
         const percentage = Math.min((currentArtists / targetArtists) * 100, 100);
 
         progressCurrent.textContent = currentArtists.toLocaleString('en-US');
