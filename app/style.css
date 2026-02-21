@@ -890,6 +890,14 @@ input[type="range"]::-webkit-slider-thumb {
     display: flex;
     align-items: baseline;
     gap: 5px;
+    width: 90px; /* Задаем фиксированную ширину */
+}
+
+.progress-label-group:first-child {
+    justify-content: flex-start; /* Выравниваем первый по левому краю */
+}
+.progress-label-group:last-child {
+    justify-content: flex-end; /* Выравниваем последний по правому краю */
 }
 
 .progress-label-group--center {
