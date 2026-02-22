@@ -16,13 +16,20 @@ Instead of guessing, you can now visually verify every style before you hit "Gen
 - **Roadmap:** Expanding to a comprehensive database of 20,000+ artist tags.
 
 ## 🛠️ Key Features
-*   **Visual Search & Filtering:** Instantly search over 10,000 styles by name or jump directly to artists based on their dataset size.
-*   **Advanced Sorting:** Organize artists alphabetically (`A-Z`) or by the number of training images (`Works`) to discover popular or rare styles.
-*   **Favorites Management:** Save your favorite artists with a single click. Your collection is stored locally in your browser via IndexedDB.
-*   **Import & Export:** Easily back up your favorites to a `.json` file or export a simple `.txt` list of artist names for your notes.
-*   **Customizable Layout:** Adjust the gallery grid from 1 to 10 columns using a slider or keyboard hotkeys (`1`-`0`) for a personalized viewing experience.
-*   **One-Click Copy:** Click on any artist card to instantly copy the name to your clipboard, ready to be pasted into your prompt.
-*   **High Performance & Offline Use:** Built with lightweight Vanilla JS and optimized WebP images for blazing-fast speed. The entire app can be downloaded and run offline.
+*   **Visual Search & Filtering:**
+ Instantly search over 10,000 styles by name or jump directly to artists based on their dataset size.
+*   **Advanced Sorting:**
+ Organize artists alphabetically (`A-Z`) or by the number of training images (`Works`) to discover popular or rare styles.
+*   **Favorites Management:**
+ Save your favorite artists with a single click. Your collection is stored locally in your browser via IndexedDB.
+*   **Import & Export:** 
+Easily back up your favorites to a `.json` file or export a simple `.txt` list of artist names for your notes.
+*   **Customizable Layout:**
+ Adjust the gallery grid from 1 to 10 columns using a slider or keyboard hotkeys (`1`-`0`) for a personalized viewing experience.
+*   **One-Click Copy:**
+ Click on any artist card to instantly copy the name to your clipboard, ready to be pasted into your prompt.
+*   **High Performance & Offline Use:**
+ Built with lightweight Vanilla JS and optimized WebP images for blazing-fast speed. The entire app can be downloaded and run offline.
 
 ## 💾 Offline Usage
 You can run this tool locally on your computer for offline access. The entire application is self-contained and is only ~380MB.
