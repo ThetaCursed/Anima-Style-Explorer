@@ -14,6 +14,8 @@
     const controlsContainer = document.getElementById('controls-container');
     const favoritesControlsWrapper = document.getElementById('favorites-controls-wrapper');
     const styleCounter = document.getElementById('style-counter');
+    const txtExportContainer = document.getElementById('txt-export-container');
+    const importFavoritesInput = document.getElementById('import-favorites-input');
     const jumpInput = document.getElementById('jump-input');
     const clearJumpBtn = document.getElementById('clear-jump-btn'); // Эта кнопка теперь крестик
     const jumpControls = document.querySelector('.jump-controls');
@@ -425,8 +427,10 @@
     tabGallery.addEventListener('click', () => {
         if (currentView === 'gallery') return;
         setActiveTab(tabGallery);
-        favoritesControlsWrapper.style.display = 'none'; // Скрываем кнопку экспорта
+        favoritesControlsWrapper.style.display = 'none'; // Скрываем кнопки импорта/экспорта
+        txtExportContainer.style.display = 'none';
         jumpControls.style.display = 'flex';
+        searchInput.parentElement.style.borderBottom = '1px solid var(--border-color)'; // Восстанавливаем разделитель
         sortControls.style.display = 'flex';
         currentView = 'gallery';
         renderView();
@@ -441,8 +445,10 @@
     tabFavorites.addEventListener('click', () => {
         if (currentView === 'favorites') return;
         setActiveTab(tabFavorites);
-        favoritesControlsWrapper.style.display = 'block'; // Показываем кнопку экспорта
+        favoritesControlsWrapper.style.display = 'flex'; // Показываем кнопки импорта/экспорта
+        txtExportContainer.style.display = 'flex';
         jumpControls.style.display = 'none';
+        searchInput.parentElement.style.borderBottom = 'none'; // Убираем разделитель, т.к. поле Jump скрыто
         sortControls.style.display = 'none'; // Скрываем сортировку для избранного
         currentView = 'favorites';
         // Сбрасываем состояние "перехода", так как он не применяется к избранному
@@ -463,31 +469,128 @@
 
     // --- Сохранение избранных в файл ---
     const saveFavoritesBtn = document.getElementById('save-favorites-btn');
+    const importFavoritesBtn = document.getElementById('import-favorites-btn');
+    const exportTxtBtn = document.getElementById('export-txt-btn');
+
+    importFavoritesBtn.addEventListener('click', () => {
+        importFavoritesInput.click();
+    });
+
+    importFavoritesInput.addEventListener('change', (event) => {
+        const file = event.target.files[0];
+        if (!file) {
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+            try {
+                const data = JSON.parse(e.target.result);
+                if (!data.favorites || !Array.isArray(data.favorites)) {
+                    throw new Error('Invalid file format');
+                }
+
+                let importedCount = 0;
+                const transaction = db.transaction(STORE_NAME, 'readwrite');
+                const store = transaction.objectStore(STORE_NAME);
+
+                data.favorites.forEach(fav => {
+                    // Проверяем, что ID существует и его еще нет в избранном
+                    if (fav.id && fav.timestamp && !favorites.has(String(fav.id))) {
+                        store.put({ id: String(fav.id), timestamp: fav.timestamp });
+                        importedCount++;
+                    }
+                });
+
+                await new Promise(resolve => transaction.oncomplete = resolve);
+                await loadFavoritesFromDB(); // Перезагружаем избранное из БД
+                renderView(); // Обновляем отображение
+                showToast(importedCount > 0 
+                    ? `${importedCount} new favorites imported!`
+                    : 'No new favorites to import.');
+
+            } catch (error) {
+                console.error('Error importing favorites:', error);
+                showToast('Error: Could not import favorites. Invalid file.');
+            } finally {
+                // Сбрасываем значение input, чтобы можно было загрузить тот же файл снова
+                importFavoritesInput.value = '';
+            }
+        };
+        reader.readAsText(file);
+    });
+
     saveFavoritesBtn.addEventListener('click', () => {
         if (favorites.size === 0) {
             showToast('You have no favorites to save.');
             return;
         }
 
-        // Собираем имена артистов, по одному на строку
-        // Сортируем по дате добавления (новые сверху) перед сохранением
-        const sortedFavoriteIds = Array.from(favorites.entries())
-            .sort(([, tsA], [, tsB]) => tsB - tsA)
-            .map(([id]) => id);
+        const favoritesToSave = Array.from(favorites.keys()).map(id => {
+            const originalData = galleryData.find(item => item.id === id);
+            if (!originalData) return null;
+            return {
+                ...originalData,
+                timestamp: favorites.get(id)
+            };
+        }).filter(Boolean)
+          .sort((a, b) => b.timestamp - a.timestamp); // Сортируем по дате добавления
 
-        const textToSave = sortedFavoriteIds.map(id => allItems.find(item => item.id === id)?.artist)
-            .filter(Boolean).join('\n');
-        const blob = new Blob([textToSave], { type: 'text/plain' });
+        const exportData = {
+            metadata: {
+                appName: "Anima Style Explorer",
+                exportDate: new Date().toISOString(),
+                favoritesCount: favoritesToSave.length
+            },
+            favorites: favoritesToSave
+        };
+
+        const jsonString = JSON.stringify(exportData, null, 2);
+        const blob = new Blob([jsonString], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
 
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'favorite-artists.txt';
+        const date = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+        a.download = `anima-style-favorites-${date}.json`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
-        showToast('Favorites saved to file!');
+
+        showToast('Favorites exported to JSON file!');
+    });
+
+    exportTxtBtn.addEventListener('click', () => {
+        if (favorites.size === 0) {
+            showToast('You have no favorites to save.');
+            return;
+        }
+
+        // 1. Получаем ID избранных и сортируем их по дате добавления (новые сверху)
+        const sortedFavoriteIds = Array.from(favorites.entries())
+            .sort(([, timestampA], [, timestampB]) => timestampB - timestampA)
+            .map(([id]) => id);
+
+        // 2. Находим имена художников по их ID
+        const artistNames = sortedFavoriteIds.map(id => {
+            const artistData = allItems.find(item => item.id === id);
+            return artistData ? artistData.artist : null;
+        }).filter(Boolean); // Убираем null, если художник не был найден
+
+        // 3. Создаем текстовый файл
+        const textContent = artistNames.join('\n');
+        const blob = new Blob([textContent], { type: 'text/plain;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+
+        const a = document.createElement('a');
+        a.href = url;
+        const date = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+        a.download = `anima-style-favorites-artists-${date}.txt`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
     });
 
     // Обработка ввода в строке поиска

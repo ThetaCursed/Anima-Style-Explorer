@@ -67,8 +67,8 @@ body {
 
 .header {
     display: flex;
-    justify-content: center;
-    margin-bottom: 30px;
+    justify-content: center; /* Отступ был 30px, уменьшаем для консистентности */
+    margin-bottom: 20px;
     position: relative; /* Для позиционирования .author-credit на странице About */
 }
 
@@ -79,6 +79,15 @@ body {
     margin-bottom: 20px;
     /* flex-wrap: wrap; */ /* Убираем перенос, чтобы все было в одну строку */
     gap: 20px;
+}
+
+.search-and-import-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* Добавляем вертикальный отступ между дочерними элементами (поиском и кнопками) */
+    gap: 15px;
 }
 
 .search-wrapper {
@@ -161,6 +170,18 @@ body {
     gap: 15px;
     width: 215px; /* Возвращаем фиксированную ширину, равную правому блоку */
 }
+/* Контейнер для кнопки экспорта TXT, который теперь в левой колонке */
+#txt-export-container {
+    justify-content: flex-start; /* Выравниваем кнопку по левому краю на десктопе */
+    width: 100%;
+}
+
+/* Уменьшаем размер кнопки экспорта в TXT */
+#export-txt-btn {
+    padding: 8px 12px;
+    font-size: 13px;
+}
+
 
 .sort-controls {
     display: flex;
@@ -196,6 +217,36 @@ body {
 }
 .sort-button:hover {
     background-color: var(--border-color);
+}
+
+/* Контейнер для кнопок импорта/экспорта JSON */
+#favorites-controls-wrapper {
+    display: inline-flex; /* Чтобы контейнер облегал кнопки */
+    border: 1px solid var(--border-color);
+    border-radius: var(--global-border-radius);
+    overflow: hidden; /* Скрываем углы дочерних элементов */
+}
+
+/* Убираем индивидуальные рамки и скругления у кнопок внутри */
+#favorites-controls-wrapper .sort-button {
+    border: none;
+    border-radius: 0;
+    background-color: var(--card-background); /* Единый фон */
+}
+
+/* Стили для кнопки Import */
+#import-favorites-btn {
+    border-right: 1px solid #545458; /* Более заметный разделитель */
+    color: var(--accent-color); /* Сохраняем акцентный цвет */
+}
+
+/* Эффекты при наведении */
+#favorites-controls-wrapper .sort-button:hover {
+    background-color: var(--border-color);
+}
+
+#import-favorites-btn:hover {
+    background-color: rgba(10, 132, 255, 0.15);
 }
 
 .sort-button.active {
@@ -501,19 +552,18 @@ input[type="range"]::-webkit-slider-thumb {
     .controls-container {
         flex-wrap: wrap; /* Позволяем контролам переноситься */
         justify-content: center; /* Центрируем содержимое */
+        gap: 15px; /* Уменьшаем отступ между блоками для мобильной версии */
     }
     .sort-jump-group {
         order: 2; /* Ставим блок с фильтрами вторым */
         flex-basis: 100%; /* Заставляем блок занять всю ширину для центрирования */
         width: auto; /* Убираем фиксированную ширину, чтобы он мог центрироваться */
         align-items: center; /* Центрируем его содержимое */
+        gap: 15px; /* Добавляем отступ между кнопками сортировки и TXT */
     }
-    .search-wrapper {
-        order: 1; /* Ставим блок поиска первым */
-        flex-basis: 100%; /* Поиск занимает всю ширину */
-        margin-bottom: 10px; /* Уменьшаем отступ, чтобы фильтры были ближе */
-        display: flex;
-        justify-content: center; /* Центрируем поле поиска */
+    /* На мобильных центрируем кнопку TXT */
+    #txt-export-container {
+        justify-content: center;
     }
     .search-input {
         text-align: center; /* Центрируем текст на мобильных */
@@ -528,6 +578,15 @@ input[type="range"]::-webkit-slider-thumb {
     .grid-controls { display: none; }
     /* Скрываем текст "Sort by:" на мобильных, чтобы кнопки были по центру */
     .sort-label {
+        display: none;
+    }
+    .search-and-import-wrapper {
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+    }
+    /* На мобильных устройствах скрываем контейнер, если он пуст */
+    #txt-export-container:empty {
         display: none;
     }
 }
@@ -667,7 +726,6 @@ input[type="range"]::-webkit-slider-thumb {
     display: flex;
     gap: 8px;
 }
-
 .support-widget__goal-text {
     font-size: 13px;
     font-weight: 400;

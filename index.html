@@ -1,4 +1,4 @@
-﻿﻿<!DOCTYPE html>
+﻿﻿﻿﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -80,19 +80,26 @@
                         Works <span class="sort-arrow"></span></button>
                 </div>
             </div>
-            <!-- Container for the export button, which appears only on the Favorites tab -->
-            <div id="favorites-controls-wrapper" style="display: none;">
-                <button id="save-favorites-btn" class="sort-button" title="Export the names of all favorite artists to a text file (.txt)">Export Favorites (.txt)</button>
+            <!-- Контейнер для кнопки экспорта в TXT (возвращаем в левый блок) -->
+            <div id="txt-export-container" class="sort-buttons-group" style="display: none;">
+                <button id="export-txt-btn" class="sort-button" title="Export artist names to a .txt file">Export Favorites (.txt)</button>
             </div>
         </div>
-        <div class="search-wrapper">
-            <div class="search-input-container">
-                <input type="search" id="search-input" class="search-input" placeholder="Search by name...">
-                <button id="clear-search-btn" class="clear-input-btn" title="Clear search" style="display: none;">×</button>
+        <div class="search-and-import-wrapper">
+            <div class="search-wrapper">
+                <div class="search-input-container">
+                    <input type="search" id="search-input" class="search-input" placeholder="Search by name...">
+                    <button id="clear-search-btn" class="clear-input-btn" title="Clear search" style="display: none;">×</button>
+                </div>
+                <div class="jump-controls">
+                    <input type="number" id="jump-input" class="search-input" placeholder="Jump to work count...">
+                    <button id="clear-jump-btn" class="clear-input-btn" title="Clear jump" style="display: none;">×</button> 
+                </div>
             </div>
-            <div class="jump-controls">
-                <input type="number" id="jump-input" class="search-input" placeholder="Jump to work count...">
-                <button id="clear-jump-btn" class="clear-input-btn" title="Clear jump" style="display: none;">×</button> 
+            <div id="favorites-controls-wrapper" style="display: none;">
+                <button id="import-favorites-btn" class="sort-button" title="Import favorites from a .json file">Import JSON</button>
+                <button id="save-favorites-btn" class="sort-button" title="Export favorites to a .json file">Export JSON</button>
+                <input type="file" id="import-favorites-input" accept=".json" style="display: none;">
             </div>
         </div>
         <div class="grid-controls">
