@@ -21,9 +21,26 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentIndex = -1;
     let activeList = [];
     let likeAnimationTimeout; // Переменная для хранения таймера анимации
-
+    
+    // --- Логика предзагрузки изображений ---
+    const PRELOAD_AHEAD = 20; // Количество изображений для предзагрузки
+    const PRELOAD_TRIGGER_OFFSET = 5; // За сколько изображений до конца пачки начинать новую загрузку
+    let preloadedUntilIndex = -1; // Индекс, до которого изображения предзагружены
 
     // --- Функции ---
+
+    /**
+     * Предзагружает изображения в фоновом режиме
+     */
+    function preloadNextBatch() {
+        const start = preloadedUntilIndex + 1;
+        const end = Math.min(start + PRELOAD_AHEAD, activeList.length);
+        for (let i = start; i < end; i++) {
+            const img = new Image();
+            img.src = activeList[i].image;
+        }
+        preloadedUntilIndex = end - 1;
+    }
 
     /**
      * Открывает Swipe Mode для указанной карточки
@@ -89,6 +106,10 @@ document.addEventListener('DOMContentLoaded', () => {
         swipeOverlay.classList.add('visible');
         updateSwipeView();
 
+        // Сбрасываем и запускаем предзагрузку
+        preloadedUntilIndex = currentIndex - 1;
+        preloadNextBatch();
+
         // Добавляем обработчики клавиатуры только когда режим активен
         document.addEventListener('keydown', handleSwipeKeyPress);
     }
@@ -149,6 +170,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         currentIndex = (currentIndex + direction + activeList.length) % activeList.length;
         updateSwipeView();
+
+        // Проверяем, нужно ли подгрузить следующую пачку изображений
+        if (currentIndex + PRELOAD_TRIGGER_OFFSET >= preloadedUntilIndex && preloadedUntilIndex < activeList.length - 1) {
+            preloadNextBatch();
+        }
     }
 
     /**
