@@ -77,6 +77,7 @@ body {
     justify-content: space-between;
     align-items: flex-start; /* Выравниваем по верху, чтобы элементы не растягивались по высоте */
     margin-bottom: 20px;
+    position: relative; /* Для позиционирования новых контролов */
     /* flex-wrap: wrap; */ /* Убираем перенос, чтобы все было в одну строку */
     gap: 20px;
 }
@@ -209,8 +210,8 @@ body {
     color: var(--text-color);
     border: 1px solid var(--border-color);
     border-radius: var(--global-border-radius);
-    padding: 10px 14px;
-    font-size: 14px;
+    padding: 8px 12px;
+    font-size: 13px;
     font-family: inherit;
     cursor: pointer;
     transition: background-color 0.2s, border-color 0.2s;
@@ -269,6 +270,12 @@ input::-webkit-inner-spin-button {
   margin: 0;
 }
 
+/* Убираем стрелки в input[type=number] для Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+
 /* Убираем стандартный крестик очистки в input[type=search] для Chrome, Safari, Edge */
 input[type="search"]::-webkit-search-decoration,
 input[type="search"]::-webkit-search-cancel-button,
@@ -279,7 +286,8 @@ input[type="search"]::-webkit-search-results-decoration {
 .search-wrapper.disabled,
 .sort-controls.disabled,
 .jump-controls.disabled,
-.search-input-container.disabled { /* Добавляем этот селектор */
+.search-input-container.disabled,
+.swipe-launch-controls.disabled {
     opacity: 0.5;
     pointer-events: none;
 }
@@ -288,12 +296,68 @@ input[type="search"]::-webkit-search-results-decoration {
     display: flex;
     flex-direction: column; /* Ставим элементы друг под другом */
     align-items: flex-end; /* Выравниваем по правому краю */
-    width: 215px; /* Задаем фиксированную ширину, чтобы соответствовать левому блоку */
+    /* width: 215px; */ /* Ширина теперь у родительского .right-controls-group */
     justify-content: center; /* Центрируем по вертикали относительно других контролов */
     gap: 10px;
     color: var(--secondary-text-color);
     font-size: 14px;
     white-space: nowrap;
+}
+
+.right-controls-group {
+    display: flex;
+    justify-content: flex-end; /* Выравниваем содержимое по правому краю */
+    align-items: flex-start;
+    gap: 40px;
+    width: 215px; /* Увеличиваем ширину, чтобы вместить отступ */
+}
+
+.swipe-launch-controls {
+    /* position: absolute; */ /* Убираем абсолютное позиционирование */
+    /* right: 0; */
+    /* top: 0; */
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Центрируем содержимое для лучшего вида */
+    min-width: 100px; /* Задаем минимальную ширину, чтобы избежать сжатия */
+    justify-content: center; /* Добавляем вертикальное центрирование */
+    gap: 10px;
+}
+
+.swipe-launch-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background-color: var(--card-background);
+    color: var(--text-color);
+    border: 1px solid var(--border-color); /* Уменьшаем отступы */
+    border-radius: var(--global-border-radius); /* Уменьшаем скругление */
+    padding: 8px 12px;
+    font-size: 13px; /* Уменьшаем шрифт */
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    white-space: nowrap; /* Запрещаем перенос текста в кнопке */
+    transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+}
+
+.swipe-launch-button:hover {
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+}
+
+.swipe-launch-icon {
+    width: 14px; /* Уменьшаем иконку */
+    height: 14px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' fill='%23f2f2f7'%3E%3Cpath d='M47.6 300.4L228.3 469.1c7.5 7 17.4 10.9 27.7 10.9s20.2-3.9 27.7-10.9L464.4 300.4c30.4-28.3 47.6-68 47.6-109.5v-5.8c0-69.9-50.5-129.5-119.4-141C347 36.5 300.6 51.4 268 84L256 96 244 84c-32.6-32.6-79-47.5-124.6-39.9C50.5 55.6 0 115.2 0 185.1v5.8c0 41.5 17.2 81.2 47.6 109.5z'/%3E%3C/svg%3E");
+    background-size: contain;
+    background-repeat: no-repeat;
+    transition: background-image 0.2s;
+}
+
+.swipe-launch-button:hover .swipe-launch-icon {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' fill='%230a84ff'%3E%3Cpath d='M47.6 300.4L228.3 469.1c7.5 7 17.4 10.9 27.7 10.9s20.2-3.9 27.7-10.9L464.4 300.4c30.4-28.3 47.6-68 47.6-109.5v-5.8c0-69.9-50.5-129.5-119.4-141C347 36.5 300.6 51.4 268 84L256 96 244 84c-32.6-32.6-79-47.5-124.6-39.9C50.5 55.6 0 115.2 0 185.1v5.8c0 41.5 17.2 81.2 47.6 109.5z'/%3E%3C/svg%3E");
 }
 
 .grid-controls .slider-wrapper {
@@ -303,12 +367,13 @@ input[type="search"]::-webkit-search-results-decoration {
 }
 
 .hotkey-hint {
-    font-size: 13px;
+    font-size: 12px; /* Уменьшаем шрифт */
     font-weight: 600;
     color: var(--text-color);
     background-color: var(--border-color);
-    padding: 4px 10px;
-    border-radius: calc(var(--global-border-radius) / 3); /* Маленькое скругление */
+    padding: 3px 8px; /* Уменьшаем отступы */
+    border-radius: var(--global-border-radius); /* Единый радиус */
+    white-space: nowrap; /* Запрещаем перенос текста в подсказке */
     user-select: none; /* Предотвращаем выделение текста */
 }
 
@@ -322,7 +387,7 @@ input[type="range"] {
     -webkit-appearance: none;
     appearance: none;
     width: 120px;
-    height: 6px;
+    height: 8px; /* Сделаем чуть толще для лучшего вида с новым радиусом */
     background: var(--card-background);
     border-radius: calc(var(--global-border-radius) / 4);
     outline: none;
@@ -356,7 +421,7 @@ input[type="range"]::-webkit-slider-thumb {
     padding: 12px 24px;
     border: none;
     background-color: transparent;
-    color: var(--secondary-text-color);
+    color: var(--secondary-text-color); /* Убираем внутренний радиус */
     border-radius: calc(var(--global-border-radius) - 4px); /* Чуть меньше основного для вложенности */
     cursor: pointer;
     transition: all 0.3s ease;
@@ -365,6 +430,7 @@ input[type="range"]::-webkit-slider-thumb {
 
 .tab-button.active {
     background-color: var(--border-color);
+    border-radius: var(--global-border-radius); /* Применяем единый радиус */
     color: var(--text-color);
 }
 
@@ -426,7 +492,12 @@ input[type="range"]::-webkit-slider-thumb {
     align-items: center;
     justify-content: center;
     color: #fff;
-    font-size: 18px;
+    /* Убираем текстовый символ и используем SVG фон */
+    font-size: 0; 
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' fill='none' stroke='%23ffffff' stroke-width='32'%3E%3Cpath d='M352.92 80C288 80 256 144 256 144s-32-64-96.92-64c-52.76 0-94.54 44.14-95.08 96.81-1.1 109.33 86.73 187.08 183.67 277.65 6.19 5.89 13.73 8.54 21.33 8.54s15.14-2.65 21.33-8.54c96.94-90.57 184.77-168.32 183.67-277.65C447.46 124.14 405.68 80 352.92 80z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 55%;
     transition: background-color 0.2s, transform 0.2s;
 }
 
@@ -436,14 +507,17 @@ input[type="range"]::-webkit-slider-thumb {
 }
 
 .favorite-button.favorited {
-    background-color: var(--accent-color);
-    color: #fff;
+    background-color: rgba(10, 132, 255, 0.2); /* Используем акцентный цвет */
+    /* Заменяем на SVG с заливкой */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' fill='%230a84ff'%3E%3Cpath d='M47.6 300.4L228.3 469.1c7.5 7 17.4 10.9 27.7 10.9s20.2-3.9 27.7-10.9L464.4 300.4c30.4-28.3 47.6-68 47.6-109.5v-5.8c0-69.9-50.5-129.5-119.4-141C347 36.5 300.6 51.4 268 84L256 96 244 84c-32.6-32.6-79-47.5-124.6-39.9C50.5 55.6 0 115.2 0 185.1v5.8c0 41.5 17.2 81.2 47.6 109.5z'/%3E%3C/svg%3E");
+    background-size: 60%;
 }
 
 .favorite-button.remove-favorite {
     font-size: 26px; /* Делаем крестик чуть больше */
     background-color: rgba(0, 0, 0, 0.5); /* Стандартный фон */
     color: #fff; /* Белый крестик */
+    background-image: none; /* Убираем фоновое изображение сердца */
 }
 
 .works-count {
@@ -580,6 +654,10 @@ input[type="range"]::-webkit-slider-thumb {
     .sort-label {
         display: none;
     }
+    /* Скрываем новую кнопку на мобильных */
+    .right-controls-group {
+        display: none;
+    }
     .search-and-import-wrapper {
         flex-direction: column;
         align-items: center;
@@ -589,6 +667,8 @@ input[type="range"]::-webkit-slider-thumb {
     #txt-export-container:empty {
         display: none;
     }
+    /* Скрываем подсказку о свайп-режиме на мобильных */
+    #swipe-continue-hint { display: none !important; }
 }
 @media (max-width: 768px) {
     body { padding: 10px; }
@@ -871,4 +951,217 @@ input[type="range"]::-webkit-slider-thumb {
     .author-credit {
         display: none; /* Скрываем авторство на мобильных устройствах */
     }
+}
+
+/* --- Swipe Mode --- */
+.swipe-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(28, 28, 30, 0.95);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    z-index: 2000;
+    overflow: hidden;
+}
+
+.swipe-overlay.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+.swipe-header {
+    position: absolute;
+    top: 20px; /* Задаем явный отступ сверху */
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    /* Убираем верхний и нижний padding, оставляем боковые */
+    padding: 0 20px;
+    color: var(--text-color);
+    z-index: 2002;
+}
+
+.swipe-header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.swipe-favorites-counter {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 16px;
+    font-weight: 600;
+    background-color: rgba(0, 0, 0, 0.4);
+    padding: 6px 12px;
+    border-radius: var(--global-border-radius);
+    color: var(--text-color);
+    cursor: default;
+    user-select: none;
+}
+
+.swipe-favorites-icon {
+    color: var(--accent-color); /* Используем акцентный цвет */
+}
+
+.swipe-artist-name {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.swipe-counter {
+    font-size: 16px;
+    font-weight: 600;
+    background-color: rgba(0, 0, 0, 0.4);
+    padding: 6px 12px;
+    border-radius: var(--global-border-radius);
+}
+
+.swipe-artist-name {
+    text-align: center;
+    font-size: 24px;
+    font-weight: 700;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+    transition: color 0.3s ease;
+}
+
+.swipe-artist-name.favorited-feedback {
+    color: var(--accent-color);
+}
+
+.swipe-artist-name.copied-feedback {
+    color: var(--accent-color);
+    transition: color 0.1s ease-in-out;
+}
+
+.swipe-close-btn {
+    font-size: 36px;
+    line-height: 1;
+    color: var(--secondary-text-color);
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: color 0.2s, transform 0.2s;
+}
+
+.swipe-close-btn:hover {
+    color: var(--text-color);
+    transform: scale(1.1);
+}
+
+.swipe-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    gap: 40px;
+}
+
+.swipe-like-feedback {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 0;
+    z-index: 2005;
+    pointer-events: none;
+    transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.swipe-like-feedback.show {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+}
+
+.swipe-like-feedback .heart {
+    width: 150px;
+    height: 150px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' fill='%230a84ff'%3E%3Cpath d='M47.6 300.4L228.3 469.1c7.5 7 17.4 10.9 27.7 10.9s20.2-3.9 27.7-10.9L464.4 300.4c30.4-28.3 47.6-68 47.6-109.5v-5.8c0-69.9-50.5-129.5-119.4-141C347 36.5 300.6 51.4 268 84L256 96 244 84c-32.6-32.6-79-47.5-124.6-39.9C50.5 55.6 0 115.2 0 185.1v5.8c0 41.5 17.2 81.2 47.6 109.5z'/%3E%3C/svg%3E") center no-repeat;
+    background-size: contain;
+    filter: drop-shadow(0 5px 15px rgba(10, 132, 255, 0.4));
+    animation: swipe-heart-beat 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes swipe-heart-beat {
+    0% { transform: scale(0.5); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+
+
+
+.swipe-container.swipe-transition .swipe-image {
+    transition: transform 0.3s ease, opacity 0.3s ease, filter 0.3s ease;
+}
+
+.swipe-image {
+    max-height: 85vh;
+    max-width: 85vw;
+    object-fit: contain;
+    border-radius: var(--global-border-radius);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+}
+
+.swipe-image--current {
+    transform: scale(1);
+    opacity: 1;
+    z-index: 2001;
+}
+
+.swipe-image--prev,
+.swipe-image--next {
+    position: absolute;
+    transform: scale(0.8);
+    opacity: 0.5;
+    filter: blur(8px);
+    z-index: 2000;
+}
+
+.swipe-image--prev {
+    transform: scale(0.8) translateX(-50vw);
+}
+
+.swipe-image--next {
+    transform: scale(0.8) translateX(50vw);
+}
+
+.swipe-hint {
+    position: absolute;
+    bottom: 20px;
+    font-size: 16px;
+    color: var(--secondary-text-color);
+    background-color: rgba(0, 0, 0, 0.4);
+    padding: 6px 12px;
+    border-radius: var(--global-border-radius);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.swipe-hint kbd {
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    background-color: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    padding: 2px 8px;
+    color: var(--text-color);
+    box-shadow: 0 2px 0 rgba(0,0,0,0.2);
 }

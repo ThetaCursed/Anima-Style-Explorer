@@ -1,4 +1,4 @@
-﻿﻿﻿﻿<!DOCTYPE html>
+﻿﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -63,8 +63,8 @@
 
     <header class="header">
         <nav class="tabs">
-            <button id="tab-gallery" class="tab-button active">Gallery</button>
-            <button id="tab-favorites" class="tab-button">Favorites</button>
+            <a href="#" id="tab-gallery" class="tab-button active">Gallery</a>
+            <a href="#" id="tab-favorites" class="tab-button">Favorites</a>
             <a href="about.html" class="tab-button">About</a>
         </nav>
     </header>
@@ -96,18 +96,30 @@
                     <button id="clear-jump-btn" class="clear-input-btn" title="Clear jump" style="display: none;">×</button> 
                 </div>
             </div>
+            <div id="swipe-continue-hint" class="hotkey-hint" style="display: none;" title="Continue swiping from where you left off in the main gallery">
+                Middle-click a card to continue swiping
+            </div>
             <div id="favorites-controls-wrapper" style="display: none;">
                 <button id="import-favorites-btn" class="sort-button" title="Import favorites from a .json file">Import JSON</button>
                 <button id="save-favorites-btn" class="sort-button" title="Export favorites to a .json file">Export JSON</button>
                 <input type="file" id="import-favorites-input" accept=".json" style="display: none;">
             </div>
         </div>
-        <div class="grid-controls">
-            <div class="slider-wrapper">
-                <label for="grid-slider" id="grid-slider-label">Columns: <span id="grid-slider-value">5</span></label>
-                <input type="range" id="grid-slider" min="1" max="10" value="5" title="Number of columns">
+        <div class="right-controls-group">
+            <div class="swipe-launch-controls">
+                <button id="start-swipe-mode-btn" class="swipe-launch-button" title="Start Swipe Mode from the beginning">
+                    <span class="swipe-launch-icon"></span>
+                    Swipe Mode
+                </button>
+                <small class="hotkey-hint" title="You can also middle-click on any card to start">Middle-click a card</small>
             </div>
-            <small class="hotkey-hint" title="Use number keys 1-9 and 0 to change column count">[1-0] keys</small>
+            <div class="grid-controls">
+                <div class="slider-wrapper">
+                    <label for="grid-slider" id="grid-slider-label">Columns: <span id="grid-slider-value">5</span></label>
+                    <input type="range" id="grid-slider" min="1" max="10" value="5" title="Number of columns">
+                </div>
+                <small class="hotkey-hint" title="Use number keys 1-9 and 0 to change column count">[1-0] keys</small>
+            </div>
         </div>
     </div>
 
@@ -122,7 +134,32 @@
 
     <button id="scroll-to-top" class="scroll-to-top-btn" title="Scroll to top">↑</button>
 
+    <!-- Swipe Mode Overlay -->
+    <div id="swipe-mode-overlay" class="swipe-overlay">
+        <div class="swipe-header">
+            <div class="swipe-header-left">
+                <div id="swipe-counter" class="swipe-counter"></div>
+                <div id="swipe-favorites-counter" class="swipe-favorites-counter" title="Total favorites">
+                    <span class="swipe-favorites-icon">♥</span>
+                    <span id="swipe-favorites-count">0</span>
+                </div>
+            </div>
+            <div id="swipe-artist-name" class="swipe-artist-name"></div>
+            <button id="swipe-close-btn" class="swipe-close-btn" title="Close (Esc)">&times;</button>
+        </div>
+        <div id="swipe-container" class="swipe-container">
+            <img id="swipe-prev-image" class="swipe-image swipe-image--prev" alt="Previous artist">
+            <img id="swipe-current-image" class="swipe-image swipe-image--current" alt="Current artist">
+            <div id="swipe-like-feedback" class="swipe-like-feedback">
+                <div class="heart"></div>
+            </div>
+            <img id="swipe-next-image" class="swipe-image swipe-image--next" alt="Next artist">
+        </div>
+        <div class="swipe-hint">Use <kbd>←</kbd> <kbd>→</kbd> to navigate, <kbd>C</kbd> to copy name, <kbd>↓</kbd> to favorite, <kbd>Esc</kbd> to close</div>
+    </div>
+
     <script src="app/data.js?v=11"></script>
     <script src="app/app.js?v=11"></script>
+    <script src="app/swipe-mode.js?v=11"></script>
 </body>
 </html>

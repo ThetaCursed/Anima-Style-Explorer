@@ -12,10 +12,12 @@
     const gridSlider = document.getElementById('grid-slider');
     const gridSliderValue = document.getElementById('grid-slider-value');
     const controlsContainer = document.getElementById('controls-container');
+    const swipeLaunchControls = document.querySelector('.swipe-launch-controls');
     const favoritesControlsWrapper = document.getElementById('favorites-controls-wrapper');
     const styleCounter = document.getElementById('style-counter');
     const txtExportContainer = document.getElementById('txt-export-container');
     const importFavoritesInput = document.getElementById('import-favorites-input');
+    const swipeContinueHint = document.getElementById('swipe-continue-hint'); // Новый элемент
     const jumpInput = document.getElementById('jump-input');
     const clearJumpBtn = document.getElementById('clear-jump-btn'); // Эта кнопка теперь крестик
     const jumpControls = document.querySelector('.jump-controls');
@@ -40,6 +42,21 @@
     let jumpTimeout; // Таймер для отложенного перехода
     const SORT_TYPE_KEY = 'sortType';
     const SORT_DIRECTION_KEY = 'sortDirection';
+
+    // --- Глобальные переменные для доступа из других скриптов ---
+    window.appGlobals = {
+        get currentItems() { return currentItems; },
+        get favorites() { return favorites; },
+        get searchTerm() { return searchTerm; },
+        get currentView() { return currentView; },
+        get db() { return db; },
+        get STORE_NAME() { return STORE_NAME; },
+        toggleFavorite,
+        showToast,
+        renderView,
+        updateVisibleFavorites // Экспортируем новую функцию
+    };
+
 
 
 
@@ -161,7 +178,7 @@
                     aria-label="${isFavorited ? 'Remove from favorites' : 'Add to favorites'}"
                     title="${isFavorited ? 'Remove from favorites' : 'Add to favorites'}"
                 >
-                    ${isFavorited ? '★' : '☆'}
+                    
                 </button>
             `;
         }
@@ -234,6 +251,28 @@
         // Обновляем UI контролов перед отрисовкой
         updateSortButtonsUI();
 
+        // --- Логика "Продолжить просмотр" ---
+        const continueSwipeId = localStorage.getItem('continueSwipeFromId');
+        if (continueSwipeId && currentView === 'gallery') {
+            // Сначала применяем текущую сортировку, чтобы найти правильный индекс
+            let tempSortedItems = [...allItems];
+            const tempDirection = sortDirection === 'asc' ? 1 : -1;
+            if (sortType === 'name') {
+                tempSortedItems.sort((a, b) => a.artist.localeCompare(b.artist) * tempDirection);
+            } else if (sortType === 'works') {
+                tempSortedItems.sort((a, b) => (a.worksCount - b.worksCount) * tempDirection);
+            }
+
+            const targetIndex = tempSortedItems.findIndex(item => item.id === continueSwipeId);
+
+            if (targetIndex !== -1) {
+                // Устанавливаем смещение, чтобы начать рендер с нужного места
+                startIndexOffset = targetIndex;
+                // Не очищаем ключ здесь, он будет очищен в loadMoreItems после запуска свайпа
+            }
+        }
+        // --- Конец логики ---
+
         window.scrollTo({ top: 0, behavior: 'instant' }); // Мгновенная прокрутка вверх при ререндере
         
         // 1. Сортируем данные
@@ -305,6 +344,21 @@
                 // Проверяем, нужно ли загрузить еще, если контент не заполняет экран
                 checkAndLoadMoreIfContentDoesNotFillScreen();
             }
+
+            // --- Логика "Продолжить просмотр" ---
+            // Проверяем, нужно ли запустить Swipe Mode после отрисовки карточек
+            // Эта часть теперь срабатывает мгновенно, так как startIndexOffset уже установлен
+            const continueSwipeId = localStorage.getItem('continueSwipeFromId');
+            if (continueSwipeId && window.appSwipe?.open) {
+                const cardToStart = galleryContainer.querySelector(`.card[data-id="${continueSwipeId}"]`);
+                if (cardToStart) {
+                    // Нашли нужную карточку, запускаем свайп
+                    window.appSwipe.open(cardToStart);
+                    // Очищаем ключ, чтобы не запускать свайп при следующем рендере
+                    localStorage.removeItem('continueSwipeFromId');
+                }
+            }
+
         }, 500);
     }
 
@@ -318,7 +372,7 @@
         }
     }
 
-    async function toggleFavorite(item, button) {
+    function toggleFavorite(item, button) {
         const transaction = db.transaction(STORE_NAME, 'readwrite');
         const store = transaction.objectStore(STORE_NAME);
 
@@ -328,7 +382,7 @@
             favorites.delete(item.id);
             showToast('Removed from favorites');
             if (currentView === 'gallery') {
-                button.textContent = '☆';
+                // button.textContent = '♡'; // Теперь управляется через CSS
                 button.title = 'Add to favorites';
                 button.setAttribute('aria-label', 'Add to favorites');
                 button.classList.remove('favorited');
@@ -340,7 +394,7 @@
             favorites.set(item.id, favItem.timestamp);
             showToast('Added to favorites');
             // В галерее меняем иконку на звезду
-            button.textContent = '★';
+            // button.textContent = '♥'; // Теперь управляется через CSS
             button.title = 'Remove from favorites';
             button.setAttribute('aria-label', 'Remove from favorites');
             button.classList.add('favorited');
@@ -368,6 +422,29 @@
                 }, { once: true }); // Событие сработает только один раз
             }
         }
+        // Обновляем состояние сердечек на видимых карточках в галерее
+        updateVisibleFavorites();
+    }
+
+    /**
+     * Обновляет визуальное состояние кнопок "избранное" для всех видимых карточек в галерее.
+     * Вызывается после изменений в избранном, сделанных в других модулях (например, Swipe Mode).
+     */
+    function updateVisibleFavorites() {
+        if (currentView !== 'gallery') return;
+
+        const cards = galleryContainer.querySelectorAll('.card');
+        cards.forEach(card => {
+            const cardId = card.dataset.id;
+            const favButton = card.querySelector('.favorite-button');
+            if (cardId && favButton && !favButton.classList.contains('remove-favorite')) {
+                const isFavorited = favorites.has(cardId);
+                favButton.classList.toggle('favorited', isFavorited);
+                const newTitle = isFavorited ? 'Remove from favorites' : 'Add to favorites';
+                favButton.title = newTitle;
+                favButton.setAttribute('aria-label', newTitle);
+            }
+        });
     }
 
     function showToast(message) {
@@ -398,6 +475,8 @@
         jumpControls.classList.toggle('disabled', isSearchingByName);
         // Блокируем поиск по имени, если идет поиск по "Jump"
         searchInput.parentElement.classList.toggle('disabled', isJumpingByCount);
+        // Блокируем Swipe Mode, если идет поиск по имени или "Jump"
+        swipeLaunchControls.classList.toggle('disabled', isSearchingByName || isJumpingByCount);
     }
 
     // --- Обработчики событий ---
@@ -424,13 +503,16 @@
         window.scrollTo({ top: 0, behavior: 'smooth' }); // Плавная прокрутка наверх
     });
 
-    tabGallery.addEventListener('click', () => {
+    tabGallery.addEventListener('click', (e) => {
+        e.preventDefault(); // Предотвращаем переход по ссылке
         if (currentView === 'gallery') return;
         setActiveTab(tabGallery);
         favoritesControlsWrapper.style.display = 'none'; // Скрываем кнопки импорта/экспорта
         txtExportContainer.style.display = 'none';
+        swipeContinueHint.style.display = 'none'; // Скрываем подсказку
         jumpControls.style.display = 'flex';
         searchInput.parentElement.style.borderBottom = '1px solid var(--border-color)'; // Восстанавливаем разделитель
+        swipeLaunchControls.style.display = 'flex';
         sortControls.style.display = 'flex';
         currentView = 'gallery';
         renderView();
@@ -442,13 +524,16 @@
         }
     });
 
-    tabFavorites.addEventListener('click', () => {
+    tabFavorites.addEventListener('click', (e) => {
+        e.preventDefault(); // Предотвращаем переход по ссылке
         if (currentView === 'favorites') return;
         setActiveTab(tabFavorites);
         favoritesControlsWrapper.style.display = 'flex'; // Показываем кнопки импорта/экспорта
         txtExportContainer.style.display = 'flex';
+        swipeContinueHint.style.display = 'block'; // Показываем подсказку
         jumpControls.style.display = 'none';
         searchInput.parentElement.style.borderBottom = 'none'; // Убираем разделитель, т.к. поле Jump скрыто
+        swipeLaunchControls.style.display = 'none';
         sortControls.style.display = 'none'; // Скрываем сортировку для избранного
         currentView = 'favorites';
         // Сбрасываем состояние "перехода", так как он не применяется к избранному
@@ -695,6 +780,10 @@
     }
 
     jumpInput.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+            e.preventDefault(); // Блокируем стандартное поведение инкремента/декремента
+            return;
+        }
         if (e.key === 'Enter') {
             clearTimeout(jumpTimeout); // Отменяем предыдущий таймер, если есть
             handleJump();

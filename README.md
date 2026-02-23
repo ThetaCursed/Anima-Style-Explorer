@@ -5,6 +5,9 @@ An interactive, high-performance visual database designed to explore artist styl
 <p align="center">
   <img src="images/Anima 2B Style Explorer.png" alt="Anima 2B Style Explorer Banner" width="800">
 </p>
+<p align="center">
+  <img src="images/swipe-mode.png" alt="Anima 2B Style Explorer Swipe Mode" width="800">
+</p>
 
 ## 🚀 Overview
 The **Anima 2B Style Explorer** is a specialized tool for AI artists and prompt engineers. It provides a standardized way to benchmark how the **Anima 2B model** (by CircleStone Labs) interprets specific artist influences from the **Danbooru** dataset.
@@ -28,6 +31,11 @@ Easily back up your favorites to a `.json` file or export a simple `.txt` list o
  Adjust the gallery grid from 1 to 10 columns using a slider or keyboard hotkeys (`1`-`0`) for a personalized viewing experience.
 *   **One-Click Copy:**
  Click on any artist card to instantly copy the name to your clipboard, ready to be pasted into your prompt.
+*   **Focused Swipe Mode:**
+    *   Enter a distraction-free, one-by-one viewing mode that automatically skips artists already in your favorites.
+    *   **Start Anywhere:** Launch from the beginning, or middle-click any card to start from that point.
+    *   **Continue Sessions:** Middle-click a card in your Favorites to jump back to the gallery and resume swiping where you left off.
+    *   **Hotkeys:** Navigate with `←`/`→`, favorite with `↓`, and copy names with `C`.
 *   **High Performance & Offline Use:**
  Built with lightweight Vanilla JS and optimized WebP images for blazing-fast speed. The entire app can be downloaded and run offline.
 
