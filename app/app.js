@@ -57,6 +57,12 @@
         updateVisibleFavorites // Экспортируем новую функцию
     };
 
+    // --- Определение базового пути для изображений ---
+    // Проверяем, запущено ли приложение с веб-сервера (http/https) или локально (file:)
+    const isOnline = window.location.protocol.startsWith('http');
+    const imageBasePath = isOnline 
+        ? 'https://cdn.jsdelivr.net/gh/ThetaCursed/Anima-Style-Explorer@main/' 
+        : '';
 
 
 
@@ -222,7 +228,7 @@
                 // Преобразуем новый формат данных в старый, с которым работает приложение
                 allItems = galleryData.map(item => ({
                     artist: item.name,
-                    image: `images/${item.p}/${item.id}.webp`,
+                    image: `${imageBasePath}images/${item.p}/${item.id}.webp`,
                     worksCount: item.post_count,
                     id: item.id
                 }));
@@ -937,52 +943,4 @@
             galleryContainer.innerHTML = '<p style="text-align: center; grid-column: 1 / -1;">Failed to initialize database.</p>';
         });
 
-    // --- Логика виджета поддержки ---
-    const supportWidget = document.getElementById('support-widget');
-    const closeSupportWidgetBtn = document.getElementById('support-widget-close');
-    const progressCurrent = document.getElementById('progress-current');
-    const progressBarFill = document.getElementById('progress-bar-fill');
-    const progressTarget = document.getElementById('progress-target');
-    // const styleCounter = document.getElementById('style-counter'); // Уже определен выше
-    const WIDGET_HIDDEN_KEY = 'supportWidgetHiddenUntil';
-
-    function initSupportWidget() {
-        const hiddenUntil = localStorage.getItem(WIDGET_HIDDEN_KEY);
-        if (hiddenUntil && Date.now() < parseInt(hiddenUntil, 10)) {
-            supportWidget.classList.add('hidden');
-            return;
-        } else {
-            styleCounter.classList.add('hidden-by-widget'); // Скрываем счетчик, если виджет будет показан
-        }
-
-        // Обновляем прогресс-бар
-        const currentArtists = allItems.length;
-        const targetArtists = 20000;
-        const percentage = Math.min((currentArtists / targetArtists) * 100, 100);
-
-        progressCurrent.textContent = currentArtists.toLocaleString('en-US');
-        progressTarget.textContent = targetArtists.toLocaleString('en-US');
-        // Небольшая задержка для анимации
-        setTimeout(() => {
-            progressBarFill.style.width = `${percentage}%`;
-        }, 300);
-
-        supportWidget.classList.remove('hidden');
-    }
-
-    closeSupportWidgetBtn.addEventListener('click', () => {
-        supportWidget.classList.add('hidden');
-        styleCounter.classList.remove('hidden-by-widget'); // Показываем счетчик обратно
-        // Скрываем на 10 часов
-        const hideUntil = Date.now() + (10 * 60 * 60 * 1000);
-        localStorage.setItem(WIDGET_HIDDEN_KEY, hideUntil);
-    });
-
-    // Вызываем инициализацию после загрузки основных данных
-    // Добавляем вызов в конец функции loadInitialData
-    const originalLoadInitialData = loadInitialData;
-    loadInitialData = async function() {
-        await originalLoadInitialData.apply(this, arguments);
-        initSupportWidget(); // Инициализируем виджет после загрузки данных
-    };
 });
