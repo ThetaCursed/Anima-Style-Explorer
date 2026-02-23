@@ -61,7 +61,7 @@
     // Проверяем, запущено ли приложение с веб-сервера (http/https) или локально (file:)
     const isOnline = window.location.protocol.startsWith('http');
     const imageBasePath = isOnline 
-        ? 'https://cdn.jsdelivr.net/gh/ThetaCursed/Anima-Style-Explorer@main/' 
+        ? 'https://cdn.statically.io/gh/ThetaCursed/Anima-Style-Explorer/main/' 
         : '';
 
 
