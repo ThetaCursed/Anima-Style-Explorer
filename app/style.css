@@ -778,18 +778,22 @@ input[type="range"]::-webkit-slider-thumb {
 }
 
 .support-button-top {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--accent-color);
+    font-size: 14px; /* Размер шрифта */
+    font-weight: 700; /* Делаем текст жирным */
+    color: #fff; /* Белый цвет текста для контраста */
+    background-color: var(--accent-color); /* Сплошной акцентный цвет фона */
     text-decoration: none;
-    padding: 3px 8px; /* Немного корректируем отступы под рамку */
-    border-radius: 8px;
-    border: 1px solid var(--accent-color); /* Добавляем рамку */
-    transition: background-color 0.2s;
+    padding: 6px 12px; /* Увеличиваем отступы для большей заметности */
+    border-radius: 10px; /* Слегка увеличим скругление */
+    border: none; /* Убираем рамку */
+    transition: background-color 0.2s, transform 0.2s, box-shadow 0.2s; /* Плавные переходы для анимации */
+    box-shadow: 0 3px 10px rgba(10, 132, 255, 0.3); /* Добавляем тень для глубины */
 }
 
 .support-button-top:hover {
-    background-color: rgba(10, 132, 255, 0.15);
+    background-color: #007aff; /* Более яркий оттенок синего при наведении */
+    transform: translateY(-2px) scale(1.02); /* Слегка уменьшаем эффект увеличения */
+    box-shadow: 0 5px 15px rgba(10, 132, 255, 0.4); /* Усиливаем тень при наведении */
 }
 
 .author-credit span {

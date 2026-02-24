@@ -22,24 +22,41 @@ document.addEventListener('DOMContentLoaded', () => {
     let activeList = [];
     let likeAnimationTimeout; // Переменная для хранения таймера анимации
     
-    // --- Логика предзагрузки изображений ---
-    const PRELOAD_AHEAD = 20; // Количество изображений для предзагрузки
-    const PRELOAD_TRIGGER_OFFSET = 5; // За сколько изображений до конца пачки начинать новую загрузку
-    let preloadedUntilIndex = -1; // Индекс, до которого изображения предзагружены
+    // --- Логика двунаправленной предзагрузки ---
+    const PRELOAD_WINDOW = 15; // Сколько изображений грузить вперед и назад от текущего
+    const PRELOAD_TRIGGER_OFFSET = 5; // За сколько изображений до края "окна" начинать новую загрузку
+    let preloadedAheadIndex = -1; // Индекс, до которого предзагружено ВПЕРЕД
+    let preloadedBehindIndex = -1; // Индекс, до которого предзагружено НАЗАД
 
     // --- Функции ---
 
     /**
-     * Предзагружает изображения в фоновом режиме
+     * Предзагружает следующую пачку изображений ВПЕРЕД.
      */
-    function preloadNextBatch() {
-        const start = preloadedUntilIndex + 1;
-        const end = Math.min(start + PRELOAD_AHEAD, activeList.length);
+    function preloadAhead() {
+        if (!activeList.length) return;
+        const start = preloadedAheadIndex + 1;
+        const end = Math.min(start + PRELOAD_WINDOW, activeList.length);
         for (let i = start; i < end; i++) {
             const img = new Image();
             img.src = activeList[i].image;
         }
-        preloadedUntilIndex = end - 1;
+        preloadedAheadIndex = end - 1;
+    }
+
+    /**
+     * Предзагружает предыдущую пачку изображений НАЗАД.
+     */
+    function preloadBehind() {
+        if (!activeList.length) return;
+        const start = preloadedBehindIndex - 1;
+        const end = Math.max(start - PRELOAD_WINDOW, -1);
+        // Загружаем в обратном порядке, чтобы более близкие к текущему индексу грузились первыми
+        for (let i = start; i > end; i--) {
+            const img = new Image();
+            img.src = activeList[i].image;
+        }
+        preloadedBehindIndex = end + 1;
     }
 
     /**
@@ -106,9 +123,10 @@ document.addEventListener('DOMContentLoaded', () => {
         swipeOverlay.classList.add('visible');
         updateSwipeView();
 
-        // Сбрасываем и запускаем предзагрузку
-        preloadedUntilIndex = currentIndex - 1;
-        preloadNextBatch();
+        // Сбрасываем и запускаем двунаправленную предзагрузку
+        preloadedAheadIndex = currentIndex - 1;
+        preloadedBehindIndex = currentIndex + 1;
+        preloadAhead();
 
         // Добавляем обработчики клавиатуры только когда режим активен
         document.addEventListener('keydown', handleSwipeKeyPress);
@@ -172,8 +190,13 @@ document.addEventListener('DOMContentLoaded', () => {
         updateSwipeView();
 
         // Проверяем, нужно ли подгрузить следующую пачку изображений
-        if (currentIndex + PRELOAD_TRIGGER_OFFSET >= preloadedUntilIndex && preloadedUntilIndex < activeList.length - 1) {
-            preloadNextBatch();
+        if (direction > 0 && currentIndex + PRELOAD_TRIGGER_OFFSET >= preloadedAheadIndex) {
+            preloadAhead();
+        }
+        // Проверяем, нужно ли подгрузить предыдущую пачку изображений
+        // (учитываем цикличность списка)
+        if (direction < 0 && (currentIndex - PRELOAD_TRIGGER_OFFSET <= preloadedBehindIndex || currentIndex > preloadedBehindIndex)) {
+             preloadBehind();
         }
     }
 
