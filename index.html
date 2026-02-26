@@ -15,7 +15,7 @@
     <title>Anima 2B Style Explorer - Visual Artist Guide for AI</title>
     <meta name="description" content="Visual database of 10,000+ artist styles for the Anima 2B model. Compare Danbooru artists and copy optimized prompts.">
     <meta name="keywords" content="Anima 2B, Anima AI, Stable Diffusion, Artist Styles, Danbooru Tags, AI Art Library">
-    <link rel="stylesheet" href="app/style.css?v=15">
+    <link rel="stylesheet" href="app/style.css?v=16">
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -66,6 +66,8 @@
                 <div class="sort-buttons-group"> <!-- Новая обертка для кнопок -->
                     <button id="sort-by-name" class="sort-button" data-sort-by="name">
                         Name <span class="sort-arrow"></span></button>
+                    <button id="sort-by-uniqueness" class="sort-button" data-sort-by="uniqueness">
+                        Uniqueness <span class="sort-arrow"></span></button>
                     <button id="sort-by-works" class="sort-button" data-sort-by="works">
                         Works <span class="sort-arrow"></span></button>
                 </div>
@@ -106,9 +108,9 @@
             <div class="grid-controls">
                 <div class="slider-wrapper">
                     <label for="grid-slider" id="grid-slider-label">Columns: <span id="grid-slider-value">5</span></label>
-                    <input type="range" id="grid-slider" min="1" max="10" value="5" title="Number of columns">
+                    <input type="range" id="grid-slider" min="4" max="10" value="5" title="Number of columns">
                 </div>
-                <small class="hotkey-hint" title="Use number keys 1-9 and 0 to change column count">[1-0] keys</small>
+                <small class="hotkey-hint" title="Use number keys 4-0 to change column count">[4-0] keys</small>
             </div>
         </div>
     </div>
@@ -148,8 +150,8 @@
         <div class="swipe-hint">Use <kbd>←</kbd> <kbd>→</kbd> to navigate, <kbd>C</kbd> to copy name, <kbd>↓</kbd> to favorite, <kbd>Esc</kbd> to close</div>
     </div>
 
-    <script src="app/data.js?v=15"></script>
-    <script src="app/app.js?v=15"></script>
-    <script src="app/swipe-mode.js?v=15"></script>
+    <script src="app/data.js?v=16"></script>
+    <script src="app/app.js?v=16"></script>
+    <script src="app/swipe-mode.js?v=16"></script>
 </body>
 </html>

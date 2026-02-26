@@ -65,32 +65,59 @@ body {
     display: flex;
     justify-content: center; /* Отступ был 30px, уменьшаем для консистентности */
     margin-bottom: 20px;
+    /* Добавляем разделительную линию под табами */
+    padding-bottom: 20px;
     position: relative; /* Для позиционирования .author-credit на странице About */
+}
+
+/* Создаем полноэкранную линию с помощью псевдоэлемента */
+.header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100vw;
+    height: 1px;
+    background-color: var(--border-color);
 }
 
 .controls-container {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start; /* Выравниваем по верху, чтобы элементы не растягивались по высоте */
-    margin-bottom: 20px;
-    position: relative; /* Для позиционирования новых контролов */
-    /* flex-wrap: wrap; */ /* Убираем перенос, чтобы все было в одну строку */
+    align-items: flex-start; /* Выравниваем все группы по верху для единой линии */
+    position: relative;
     gap: 20px;
+    margin-bottom: 30px; /* Добавляем отступ снизу, чтобы отодвинуть галерею от линии */
+    /* Добавляем нижнюю границу и отступы для создания разделительной линии */
+    padding-bottom: 20px;
+}
+
+/* Создаем вторую полноэкранную линию */
+.controls-container::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100vw;
+    height: 1px;
+    background-color: var(--border-color);
 }
 
 .search-and-import-wrapper {
-    flex: 1;
+    flex: 0 1 auto; /* Убираем растягивание, чтобы блок занимал место по контенту */
+    margin: 0 auto; /* Центрируем блок в доступном пространстве */
     display: flex;
     flex-direction: column;
     align-items: center;
-    /* Добавляем вертикальный отступ между дочерними элементами (поиском и кнопками) */
-    gap: 15px;
+    gap: 10px; /* Добавляем отступ между элементами внутри (поиском, подсказкой, кнопками) */
 }
 
 .search-wrapper {
     flex: 1; /* Позволяем блоку поиска занимать доступное пространство в центре */
     min-width: 200px; /* Минимальная ширина для поля поиска */
-    max-width: 280px; /* Уменьшаем ширину для лучшей иерархии */
+    max-width: 400px; /* Увеличиваем ширину для лучшей иерархии */
     display: flex;
     flex-direction: column; /* Ставим элементы друг под другом */
     /* Новые стили для создания единого блока */
@@ -119,6 +146,8 @@ body {
 .search-input-container {
     position: relative; /* Контейнер для позиционирования кнопки */
     border-bottom: 1px solid var(--border-color); /* Разделитель между полями */
+    width: 360px; /* Фиксированная ширина для десктопа */
+    margin: 0 auto; /* Центрируем на десктопе */
 }
 
 .jump-controls {
@@ -183,8 +212,9 @@ body {
 .sort-controls {
     display: flex;
     align-items: center;
-    justify-content: center; /* Центрируем содержимое по горизонтали */
+    justify-content: flex-start; /* Выравниваем по левому краю, чтобы метка не уезжала */
     gap: 10px; /* Возвращаем отступ между меткой и кнопками */
+    width: 100%; /* Заставляем контейнер занять всю ширину родителя */
 }
 
 .sort-label {
@@ -195,6 +225,7 @@ body {
 
 .sort-buttons-group {
     display: flex;
+    justify-content: flex-start; /* Выравниваем кнопки по началу */
     gap: 10px; /* Сохраняем отступ между кнопками */
 }
 
@@ -202,6 +233,7 @@ body {
     display: inline-flex;
     align-items: center;
     gap: 6px;
+    justify-content: center; /* Центрируем текст и стрелку внутри кнопки */
     background-color: var(--card-background);
     color: var(--text-color);
     border: 1px solid var(--border-color);
@@ -249,6 +281,11 @@ body {
 .sort-button.active {
     border-color: var(--accent-color);
     color: var(--accent-color);
+}
+/* Устанавливаем ширину кнопки Uniqueness по содержимому */
+#sort-by-uniqueness {
+    flex: 0 1 auto; /* Позволяем кнопке иметь автоматическую ширину */
+    width: auto;
 }
 
 .sort-arrow {
@@ -301,11 +338,11 @@ input[type="search"]::-webkit-search-results-decoration {
 }
 
 .right-controls-group {
-    display: flex;
-    justify-content: flex-end; /* Выравниваем содержимое по правому краю */
-    align-items: flex-start;
-    gap: 40px;
-    width: 215px; /* Увеличиваем ширину, чтобы вместить отступ */
+    display: flex; /* Сохраняем flex для внутреннего выравнивания */
+    justify-content: flex-end;
+    align-items: flex-start; /* Выравниваем по верху, как и левый блок */
+    gap: 40px; /* Сохраняем отступ между свайпом и сеткой */
+    width: 215px; /* Задаем ту же ширину, что и у левого блока для симметрии */
 }
 
 .swipe-launch-controls {
@@ -402,6 +439,8 @@ input[type="range"]::-webkit-slider-thumb {
 .tabs {
     display: flex;
     background-color: var(--card-background);
+    width: 100%; /* Растягиваем на всю ширину родителя, который будет ограничен */
+    max-width: 400px; /* Устанавливаем ту же ширину, что и у блока поиска */
     border-radius: var(--global-border-radius);
 }
 .tabs .author-credit {
@@ -421,6 +460,8 @@ input[type="range"]::-webkit-slider-thumb {
     border-radius: calc(var(--global-border-radius) - 4px); /* Чуть меньше основного для вложенности */
     cursor: pointer;
     transition: all 0.3s ease;
+    flex-grow: 1; /* Позволяем кнопкам равномерно занимать пространство */
+    text-align: center; /* Центрируем текст внутри кнопок */
     text-decoration: none; /* Убираем подчеркивание у ссылки */
 }
 
@@ -428,6 +469,37 @@ input[type="range"]::-webkit-slider-thumb {
     background-color: var(--border-color);
     border-radius: var(--global-border-radius); /* Применяем единый радиус */
     color: var(--text-color);
+}
+
+.gallery-grid.uniqueness-view .works-count {
+    display: none;
+}
+
+/* Скрываем счетчик работ и ранг уникальности только на вкладке "Избранное" */
+.gallery-grid.favorites-view .card .works-count, .gallery-grid.favorites-view .card .uniqueness-rank {
+    display: none;
+}
+
+.uniqueness-rank {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    min-width: 36px; /* Минимальная ширина равна высоте, чтобы сохранять круг */
+    height: 36px;
+    padding: 0 6px; /* Добавляем отступы по бокам для текста */
+    background-color: rgba(10, 132, 255, 0.6); /* Акцентный цвет с прозрачностью */
+    border-radius: var(--global-border-radius); /* Половина высоты для создания "пилюли" */
+    display: none; /* По умолчанию скрыт */
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    user-select: none;
+}
+
+.gallery-grid.uniqueness-view .uniqueness-rank {
+    display: flex; /* Показываем только в режиме сортировки по уникальности */
 }
 
 .gallery-grid {
@@ -635,9 +707,18 @@ input[type="range"]::-webkit-slider-thumb {
     #txt-export-container {
         justify-content: center;
     }
+    /* На мобильных возвращаем центрирование для кнопок сортировки */
+    .sort-controls {
+        justify-content: center;
+    }
     .search-input {
         text-align: center; /* Центрируем текст на мобильных */
     }
+    .search-wrapper {
+        width: 90%; /* Делаем весь блок поиска на 20% уже родителя */
+        max-width: none; /* Убираем ограничение max-width на мобильных */
+    }
+    .search-input-container { width: 100%; } /* Поле поиска занимает всю ширину своего нового родителя */
     .jump-controls {
         flex-basis: 100%;
         justify-content: center;
@@ -657,7 +738,13 @@ input[type="range"]::-webkit-slider-thumb {
     .search-and-import-wrapper {
         flex-direction: column;
         align-items: center;
+        width: 100%; /* Занимаем всю ширину, но добавим отступы */
+        padding: 0 10px; /* Добавляем отступы по бокам */
+    }
+    .header {
         width: 100%;
+        /* Добавляем отступы по бокам и сохраняем нижний отступ для линии */
+        padding: 0 10px 20px; 
     }
     /* На мобильных устройствах скрываем контейнер, если он пуст */
     #txt-export-container:empty {
@@ -689,6 +776,14 @@ input[type="range"]::-webkit-slider-thumb {
         top: 10px;
         left: 10px;
     }
+    .uniqueness-rank {
+        min-width: 44px;
+        height: 44px;
+        border-radius: 22px;
+        font-size: 15px;
+        top: 10px;
+        left: 10px;
+    }
 }
 @media (max-width: 480px) {
     .gallery-grid { --grid-columns: 2; } /* 2 колонки для телефонов */
@@ -698,6 +793,12 @@ input[type="range"]::-webkit-slider-thumb {
         font-size: 16px;
     }
     .works-count {
+        min-width: 32px;
+        height: 32px;
+        border-radius: 16px;
+        font-size: 13px;
+    }
+    .uniqueness-rank {
         min-width: 32px;
         height: 32px;
         border-radius: 16px;
@@ -808,12 +909,14 @@ input[type="range"]::-webkit-slider-thumb {
 
 @media (max-width: 992px) {
     .author-credit {
-        /* Стили для мобильных не меняем */
+    margin-bottom: 5px;
     }
     .top-info-container {
         position: static; /* Возвращаем в поток документа */
         margin: 0 auto 20px; /* Центрируем и добавляем отступ снизу */
-        width: fit-content;
+        width: 60%; /* Растягиваем на всю ширину родителя */
+        height: 80px;
+        max-width: 400px; /* Ограничиваем максимальную ширину, как у других элементов */
         flex-direction: column; /* Элементы друг под другом для мобильных */
         gap: 8px; /* Уменьшаем отступ между строками */
         padding: 6px 10px; /* Делаем контейнер чуть меньше */

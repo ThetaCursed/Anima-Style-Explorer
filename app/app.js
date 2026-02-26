@@ -8,6 +8,7 @@
     const searchInput = document.getElementById('search-input');
     const sortByNameBtn = document.getElementById('sort-by-name');
     const sortByWorksBtn = document.getElementById('sort-by-works');
+    const sortByUniquenessBtn = document.getElementById('sort-by-uniqueness');
     const scrollToTopBtn = document.getElementById('scroll-to-top');
     const gridSlider = document.getElementById('grid-slider');
     const gridSliderValue = document.getElementById('grid-slider-value');
@@ -33,7 +34,7 @@
     const itemsPerPage = 20;
     let searchTerm = ''; // 'gallery', 'favorites'
     let currentView = 'gallery'; // 'gallery', 'favorites', or 'about'
-    let sortType = 'name'; // 'name' or 'works'
+    let sortType = 'name'; // 'name', 'works', or 'uniqueness'
     let sortDirection = 'desc'; // 'asc' or 'desc'
     let isLoading = false;
     let sortUpdateTimeout; // Переменная для таймера сохранения сортировки
@@ -164,6 +165,11 @@
 
         const isFavorited = favorites.has(item.id);
         
+        // Если активна сортировка по уникальности, показываем ранг
+        const rankHTML = sortType === 'uniqueness' && item.uniquenessRank
+            ? `<div class="uniqueness-rank" title="Uniqueness Rank">#${item.uniquenessRank}</div>`
+            : '';
+
         let favButtonHTML;
         if (currentView === 'favorites') {
             // В "Избранном" всегда показываем кнопку удаления (крестик)
@@ -197,6 +203,7 @@
             <div class="works-count" title="Approximate number of training images for this artistic style">
                 ${item.worksCount.toLocaleString('en-US')}
             </div>
+            ${rankHTML}
             ${favButtonHTML}
         `;
 
@@ -230,7 +237,8 @@
                     artist: item.name,
                     image: `${imageBasePath}images/${item.p}/${item.id}.webp`,
                     worksCount: item.post_count,
-                    id: item.id
+                    id: item.id,
+                    uniqueness_score: item.uniqueness_score
                 }));
 
                 // Создаем заранее отсортированную копию для функции jump
@@ -257,6 +265,15 @@
         // Обновляем UI контролов перед отрисовкой
         updateSortButtonsUI();
 
+        // Добавляем или убираем класс для скрытия счетчика работ
+        if (sortType === 'uniqueness') {
+            galleryContainer.classList.add('uniqueness-view');
+        } else {
+            galleryContainer.classList.remove('uniqueness-view');
+        }
+        // Добавляем класс для вида "Избранное"
+        galleryContainer.classList.toggle('favorites-view', currentView === 'favorites');
+
         // --- Логика "Продолжить просмотр" ---
         const continueSwipeId = localStorage.getItem('continueSwipeFromId');
         if (continueSwipeId && currentView === 'gallery') {
@@ -267,6 +284,8 @@
                 tempSortedItems.sort((a, b) => a.artist.localeCompare(b.artist) * tempDirection);
             } else if (sortType === 'works') {
                 tempSortedItems.sort((a, b) => (a.worksCount - b.worksCount) * tempDirection);
+            } else if (sortType === 'uniqueness') {
+                tempSortedItems.sort((a, b) => (b.uniqueness_score || 0) - (a.uniqueness_score || 0));
             }
 
             const targetIndex = tempSortedItems.findIndex(item => item.id === continueSwipeId);
@@ -291,8 +310,21 @@
             // Для 'works', 'desc' - это b-a, 'asc' - это a-b.
             // direction = -1 для 'desc', поэтому (a-b) * -1 = b-a.
             sortedItems.sort((a, b) => (a.worksCount - b.worksCount) * direction);
+        } else if (sortType === 'uniqueness') {
+            // Для 'uniqueness' направление всегда 'desc'
+            sortedItems.sort((a, b) => (b.uniqueness_score || 0) - (a.uniqueness_score || 0));
         }
         
+        // Добавляем ранг после основной сортировки, но до других фильтров
+        sortedItems.forEach((item, index) => {
+            if (sortType === 'uniqueness') {
+                item.uniquenessRank = index + 1;
+            } else {
+                // Удаляем ранг, если он не нужен, чтобы он не отображался в других видах
+                delete item.uniquenessRank;
+            }
+        });
+
         // 2. Фильтруем по избранному, если нужно (до поиска, чтобы поиск работал по избранным)
         if (currentView === 'favorites') {
             sortedItems = sortedItems.filter(item => favorites.has(item.id));
@@ -818,31 +850,53 @@
     // --- Управление сортировкой ---
     function updateSortButtonsUI() {
         // Сброс состояния для обеих кнопок
-        [sortByNameBtn, sortByWorksBtn].forEach(btn => {
+        [sortByNameBtn, sortByWorksBtn, sortByUniquenessBtn].forEach(btn => {
             btn.classList.remove('active');
             btn.querySelector('.sort-arrow').textContent = '';
         });
 
         // Обновляем состояние блокировки контролов
         updateControlsState();
-
+        
         // Обновляем активную кнопку и стрелку
-        const activeBtn = sortType === 'name' ? sortByNameBtn : sortByWorksBtn;
+        let activeBtn;
+        if (sortType === 'name') {
+            activeBtn = sortByNameBtn;
+        } else if (sortType === 'works') {
+            activeBtn = sortByWorksBtn;
+        } else { // uniqueness
+            activeBtn = sortByUniquenessBtn;
+        }
+        
         const arrow = activeBtn.querySelector('.sort-arrow');
-
         activeBtn.classList.add('active');
         arrow.textContent = sortDirection === 'asc' ? '▲' : '▼';
     }
 
     function handleSortClick(clickedType) {
-        resetJumpState(false); // Сортировка всегда сбрасывает режим "перехода" без ре-рендера
+        // Если активируем "Uniqueness", сбрасываем все остальные фильтры
+        if (clickedType === 'uniqueness' && sortType !== 'uniqueness') {
+            resetJumpState(false); // Сбрасываем "Jump"
+            
+            // Прямой сброс поиска вместо имитации клика для надежности
+            if (searchInput.value !== '') {
+                searchInput.value = '';
+                searchTerm = '';
+                clearSearchBtn.style.display = 'none';
+            }
+        }
+
         if (sortType === clickedType) {
-            // Если кликнули по активной кнопке, меняем направление
-            sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+            // Если кликнули по активной кнопке, меняем направление,
+            // но для 'uniqueness' направление всегда 'desc' и не меняется.
+            if (clickedType !== 'uniqueness') {
+                sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+            }
         } else {
             // Если кликнули по новой кнопке, активируем ее
             sortType = clickedType;
             // Устанавливаем направление по умолчанию
+            // Для 'name' - asc, для 'works' и 'uniqueness' - desc.
             sortDirection = sortType === 'name' ? 'asc' : 'desc';
         }
         updateSortButtonsUI();
@@ -858,6 +912,7 @@
 
     sortByNameBtn.addEventListener('click', () => handleSortClick('name'));
     sortByWorksBtn.addEventListener('click', () => handleSortClick('works'));
+    sortByUniquenessBtn.addEventListener('click', () => handleSortClick('uniqueness'));
 
     // --- Конец управления сортировкой ---
 
@@ -869,7 +924,7 @@
         const key = parseInt(e.key, 10);
 
         // Если нажата цифра от 1 до 9
-        if (key >= 1 && key <= 9) {
+        if (key >= 4 && key <= 9) {
             gridSlider.value = key;
             updateGridColumns(key);
             triggerGridSave(key);
@@ -917,7 +972,12 @@
 
     // Загружаем и применяем сохраненное количество колонок только на десктопе
     if (window.innerWidth > 992) {
-        const savedColumnCount = localStorage.getItem(GRID_COLUMN_KEY) || '5';
+        let savedColumnCount = parseInt(localStorage.getItem(GRID_COLUMN_KEY) || '5', 10);
+        // Проверяем, что сохраненное значение находится в новом допустимом диапазоне (4-10)
+        if (savedColumnCount < 4) {
+            savedColumnCount = 4;
+            localStorage.setItem(GRID_COLUMN_KEY, savedColumnCount);
+        }
         gridSlider.value = savedColumnCount;
         updateGridColumns(savedColumnCount);
     }
