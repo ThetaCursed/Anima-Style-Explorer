@@ -258,7 +258,7 @@ document.addEventListener('DOMContentLoaded', () => {
             case 'KeyC': // Физическая клавиша 'C'
                 if (artistNameElement.textContent) {
                     navigator.clipboard.writeText(artistNameElement.textContent).then(() => {
-                        getGlobal('showToast')('Artist name copied!');
+                        getGlobal('showToast')(`Artist name "@${artistNameElement.textContent}" copied!`);
                         // Добавляем подсветку имени как фидбек
                         artistNameElement.classList.add('copied-feedback');
                         setTimeout(() => {

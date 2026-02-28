@@ -210,7 +210,7 @@
         // Копирование имени по клику на карточку (кроме кнопки "избранное")
         card.addEventListener('click', (e) => {
             if (!e.target.classList.contains('favorite-button')) {
-                navigator.clipboard.writeText(item.artist).then(() => {
+                navigator.clipboard.writeText('@' + item.artist).then(() => {
                     showToast('Artist name copied to clipboard!');
                 });
             }
