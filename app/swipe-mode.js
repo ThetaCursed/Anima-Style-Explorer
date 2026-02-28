@@ -290,11 +290,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const searchTerm = getGlobal('searchTerm');
 
             if (currentView === 'favorites') {
-                // Новая логика: "Продолжить просмотр" из избранного
+                // Новая логика: "Перейти к художнику в галерее"
                 const artistId = card.dataset.id;
-                localStorage.setItem('continueSwipeFromId', artistId);
+                // Устанавливаем флаг для app.js, чтобы он знал, куда прокрутить
+                localStorage.setItem('jumpToArtistId', artistId);
                 // Программно кликаем на вкладку галереи
-                document.getElementById('tab-gallery')?.click();
+                document.getElementById('tab-gallery').click();
             } else if (currentView === 'gallery' && (!searchTerm || searchTerm.length === 0)) {
                 // Старая логика: запуск Swipe Mode из галереи
                 // (блокируем, если активен поиск по имени)

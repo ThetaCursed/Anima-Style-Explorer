@@ -14,21 +14,20 @@ The **Anima 2B Style Explorer** is a specialized tool for AI artists and prompt 
 
 Instead of guessing, you can now visually verify every style before you hit "Generate".
 
-## ✨ Current Status: Phase 3
-- **Current Library:** 10,000+ artist previews.
-- **Roadmap:** Expanding to a comprehensive database of 20,000+ artist tags.
+## ✨ Current Status: Goal Achieved!
+- **Massive Library:** Now featuring over 20,000 danbooru-tagged artist previews.
 
 ## 🛠️ Key Features
 *   **Visual Search & Filtering:**
- Instantly search over 10,000 styles by name or jump directly to artists based on their dataset size.
+ Instantly search over 20,000 styles by name. Jump directly to artists based on their dataset size (`Works`) or their **Uniqueness Rank**.
 *   **Advanced Sorting:**
- Organize artists alphabetically (`A-Z`) or by the number of training images (`Works`) to discover popular or rare styles.
+ Organize artists alphabetically (`A-Z`), by the number of training images (`Works`), or by their stylistic **Uniqueness** to find hidden gems.
 *   **Favorites Management:**
  Save your favorite artists with a single click. Your collection is stored locally in your browser via IndexedDB.
 *   **Import & Export:** 
 Easily back up your favorites to a `.json` file or export a simple `.txt` list of artist names for your notes.
 *   **Customizable Layout:**
- Adjust the gallery grid from 1 to 10 columns using a slider or keyboard hotkeys (`1`-`0`) for a personalized viewing experience.
+ Adjust the gallery grid from 4 to 10 columns using a slider or keyboard hotkeys (`4`-`0`) for a personalized viewing experience.
 *   **One-Click Copy:**
  Click on any artist card to instantly copy the name to your clipboard, ready to be pasted into your prompt.
 *   **Focused Swipe Mode:**
@@ -40,7 +39,7 @@ Easily back up your favorites to a `.json` file or export a simple `.txt` list o
  Built with lightweight Vanilla JS and optimized WebP images for blazing-fast speed. The entire app can be downloaded and run offline.
 
 ## 💾 Offline Usage
-You can run this tool locally on your computer for offline access. The entire application is self-contained and is only ~380MB.
+You can run this tool locally on your computer for offline access. The entire application is self-contained and is only ~800MB.
 
 1.  **Download the project:**
     *   **Direct Download:** [Click here to download the ZIP file](https://github.com/ThetaCursed/Anima-Style-Explorer/archive/refs/heads/main.zip).

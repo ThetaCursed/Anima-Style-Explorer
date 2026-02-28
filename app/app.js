@@ -268,15 +268,17 @@
         // Добавляем или убираем класс для скрытия счетчика работ
         if (sortType === 'uniqueness') {
             galleryContainer.classList.add('uniqueness-view');
+            jumpInput.placeholder = 'Jump to rank...';
         } else {
             galleryContainer.classList.remove('uniqueness-view');
+            jumpInput.placeholder = 'Jump to work count...';
         }
         // Добавляем класс для вида "Избранное"
         galleryContainer.classList.toggle('favorites-view', currentView === 'favorites');
 
         // --- Логика "Продолжить просмотр" ---
-        const continueSwipeId = localStorage.getItem('continueSwipeFromId');
-        if (continueSwipeId && currentView === 'gallery') {
+        const jumpToArtistId = localStorage.getItem('jumpToArtistId');
+        if (jumpToArtistId && currentView === 'gallery') {
             // Сначала применяем текущую сортировку, чтобы найти правильный индекс
             let tempSortedItems = [...allItems];
             const tempDirection = sortDirection === 'asc' ? 1 : -1;
@@ -288,12 +290,11 @@
                 tempSortedItems.sort((a, b) => (b.uniqueness_score || 0) - (a.uniqueness_score || 0));
             }
 
-            const targetIndex = tempSortedItems.findIndex(item => item.id === continueSwipeId);
+            const targetIndex = tempSortedItems.findIndex(item => item.id === jumpToArtistId);
 
             if (targetIndex !== -1) {
                 // Устанавливаем смещение, чтобы начать рендер с нужного места
                 startIndexOffset = targetIndex;
-                // Не очищаем ключ здесь, он будет очищен в loadMoreItems после запуска свайпа
             }
         }
         // --- Конец логики ---
@@ -346,9 +347,25 @@
         // Итоговый массив для отображения
         currentItems = filteredItems.slice(startIndexOffset);
 
+        // Проверяем, есть ли результаты ПОСЛЕ всех фильтраций
+        if (filteredItems.length === 0) {
+            const p = document.createElement('p');
+            p.style.textAlign = 'center';
+            p.style.gridColumn = '1 / -1';
 
-        if (currentItems.length === 0 && currentView === 'favorites' && startIndexOffset === 0) {
-            galleryContainer.innerHTML = '<p style="text-align: center; grid-column: 1 / -1;">No favorites yet.</p>';
+            if (currentView === 'favorites') {
+                if (favorites.size > 0 && searchTerm) {
+                    p.innerText = `No artists found for "${searchTerm}" in your favorites.`;
+                } else {
+                    p.innerText = 'You have no favorites yet.';
+                }
+            } else if (searchTerm) { // Только для вида "Gallery" с активным поиском
+                p.innerText = `No artists found for "${searchTerm}".`;
+            } else {
+                // Для пустой галереи без поиска (маловероятно, но на всякий случай)
+                p.innerText = 'No artists found.';
+            }
+            galleryContainer.appendChild(p);
             return;
         }
         
@@ -384,17 +401,10 @@
             }
 
             // --- Логика "Продолжить просмотр" ---
-            // Проверяем, нужно ли запустить Swipe Mode после отрисовки карточек
-            // Эта часть теперь срабатывает мгновенно, так как startIndexOffset уже установлен
-            const continueSwipeId = localStorage.getItem('continueSwipeFromId');
-            if (continueSwipeId && window.appSwipe?.open) {
-                const cardToStart = galleryContainer.querySelector(`.card[data-id="${continueSwipeId}"]`);
-                if (cardToStart) {
-                    // Нашли нужную карточку, запускаем свайп
-                    window.appSwipe.open(cardToStart);
-                    // Очищаем ключ, чтобы не запускать свайп при следующем рендере
-                    localStorage.removeItem('continueSwipeFromId');
-                }
+            // Очищаем флаг после того, как смещение было использовано в renderView
+            const jumpToArtistId = localStorage.getItem('jumpToArtistId');
+            if (jumpToArtistId) {
+                localStorage.removeItem('jumpToArtistId');
             }
 
         }, 500);
@@ -457,6 +467,8 @@
                     if (favorites.size === 0) {
                         galleryContainer.innerHTML = '<p style="text-align: center; grid-column: 1 / -1;">No favorites yet.</p>';
                     }
+                    // Обновляем счетчик в реальном времени
+                    styleCounter.innerHTML = `Styles in Favorites: <span class="style-count-number">${favorites.size.toLocaleString('en-US')}</span>`;
                 }, { once: true }); // Событие сработает только один раз
             }
         }
@@ -553,6 +565,9 @@
         swipeLaunchControls.style.display = 'flex';
         sortControls.style.display = 'flex';
         currentView = 'gallery';
+        // Обновляем счетчик для отображения общего количества стилей
+        styleCounter.innerHTML = `Artist-based styles: <span class="style-count-number">${allItems.length.toLocaleString('en-US')}</span>`;
+
         renderView();
 
         // Очищаем поиск при переключении на галерею
@@ -574,6 +589,10 @@
         swipeLaunchControls.style.display = 'none';
         sortControls.style.display = 'none'; // Скрываем сортировку для избранного
         currentView = 'favorites';
+
+        // Обновляем счетчик для отображения количества избранных
+        styleCounter.innerHTML = `Styles in Favorites: <span class="style-count-number">${favorites.size.toLocaleString('en-US')}</span>`;
+
         // Сбрасываем состояние "перехода", так как он не применяется к избранному
         startIndexOffset = 0;
         jumpInput.value = '';
@@ -628,6 +647,8 @@
                 await new Promise(resolve => transaction.oncomplete = resolve);
                 await loadFavoritesFromDB(); // Перезагружаем избранное из БД
                 renderView(); // Обновляем отображение
+                // Обновляем счетчик после импорта
+                styleCounter.innerHTML = `Styles in Favorites: <span class="style-count-number">${favorites.size.toLocaleString('en-US')}</span>`;
                 showToast(importedCount > 0 
                     ? `${importedCount} new favorites imported!`
                     : 'No new favorites to import.');
@@ -649,14 +670,9 @@
             return;
         }
 
-        const favoritesToSave = Array.from(favorites.keys()).map(id => {
-            const originalData = galleryData.find(item => item.id === id);
-            if (!originalData) return null;
-            return {
-                ...originalData,
-                timestamp: favorites.get(id)
-            };
-        }).filter(Boolean)
+        // Преобразуем Map в массив объектов, содержащих только id и timestamp
+        const favoritesToSave = Array.from(favorites.entries())
+          .map(([id, timestamp]) => ({ id, timestamp }))
           .sort((a, b) => b.timestamp - a.timestamp); // Сортируем по дате добавления
 
         const exportData = {
@@ -749,41 +765,57 @@
 
     // --- Логика перехода к номеру ---
     function handleJump(isReset = false) {
-        const targetWorksCount = parseInt(jumpInput.value, 10);
+        const targetValue = parseInt(jumpInput.value, 10);
         if (isReset || !jumpInput.value) {
             resetJumpState();
             return;
         }
 
-        // Сохраняем текущую сортировку, если это первый ввод в поле Jump
-        if (previousSortType === null) {
-            previousSortType = sortType;
-            previousSortDirection = sortDirection;
-        }
+        // Если активна сортировка по уникальности, переходим к рангу
+        if (sortType === 'uniqueness') {
+            const targetRank = targetValue;
+            if (isNaN(targetRank) || targetRank < 1) {
+                resetJumpState();
+                return;
+            }
+            if (targetRank > allItems.length) {
+                galleryContainer.innerHTML = `<p style="text-align: center; grid-column: 1 / -1;">Rank not found. The highest rank is ${allItems.length.toLocaleString('en-US')}.</p>`;
+                // Не сбрасываем состояние, чтобы пользователь видел, что ввел
+                return;
+            }
+            // Ранг начинается с 1, а индекс с 0
+            startIndexOffset = Math.max(0, targetRank - 1);
+            // Сортировка уже правильная, просто перерисовываем
+            renderView();
+        } else {
+            // Старая логика для перехода по количеству работ
+            const targetWorksCount = targetValue;
 
-        const foundIndex = itemsSortedByWorks.findIndex(item => item.worksCount <= targetWorksCount);
+            // Сохраняем текущую сортировку, если это первый ввод в поле Jump
+            if (previousSortType === null) {
+                previousSortType = sortType;
+                previousSortDirection = sortDirection;
+            }
 
-        if (foundIndex === -1) {
-            showToast('No artists found with that many works or less.');
-            return;
-        }
+            const foundIndex = itemsSortedByWorks.findIndex(item => item.worksCount <= targetWorksCount);
 
-        // Блокируем другие контролы, ТОЛЬКО ЕСЛИ переход успешен
-        if (foundIndex !== -1) {
+            if (foundIndex === -1) {
+                showToast('No artists found with that many works or less.');
+                return;
+            }
+
+            // Блокируем другие контролы, ТОЛЬКО ЕСЛИ переход успешен
             searchInput.value = ''; // Очищаем поле поиска
             searchTerm = ''; // Сбрасываем поисковый запрос
             updateControlsState(); // Обновляем состояние контролов
+
+            // Устанавливаем смещение точно на найденный индекс, без запаса
+            startIndexOffset = foundIndex;
+            // Принудительно устанавливаем сортировку по работам (по убыванию)
+            sortType = 'works';
+            sortDirection = 'desc';
+            renderView();
         }
-
-        // Устанавливаем смещение точно на найденный индекс, без запаса
-        startIndexOffset = foundIndex;
-        
-        // Принудительно устанавливаем сортировку по работам (по убыванию)
-        sortType = 'works';
-        sortDirection = 'desc';
-        
-
-        renderView();
 
         // Скрываем клавиатуру на мобильных после успешного перехода
         if (window.innerWidth <= 992) {
@@ -793,6 +825,11 @@
 
     function resetJumpState(shouldRender = true) {
         startIndexOffset = 0;
+
+        // Если мы были в режиме перехода по рангу, не меняем сортировку
+        if (sortType === 'uniqueness') {
+            previousSortType = null;
+        }
 
         // Восстанавливаем предыдущую сортировку, если она была сохранена
         if (previousSortType !== null) {
