@@ -715,8 +715,8 @@ input[type="range"]::-webkit-slider-thumb {
         text-align: center; /* Центрируем текст на мобильных */
     }
     .search-wrapper {
-        width: 90%; /* Делаем весь блок поиска на 20% уже родителя */
-        max-width: none; /* Убираем ограничение max-width на мобильных */
+        width: 90%; /* Задаем ширину в процентах для адаптивности */
+        max-width: 360px; /* Делаем блок поиска короче табов для иерархии на планшетах */
     }
     .search-input-container { width: 100%; } /* Поле поиска занимает всю ширину своего нового родителя */
     .jump-controls {
@@ -860,9 +860,9 @@ input[type="range"]::-webkit-slider-thumb {
     right: 20px;
     display: flex;
     align-items: center; /* Выравниваем по вертикали */
-    gap: 15px; /* Добавляем отступ между элементами */
+    gap: 20px; /* Добавляем отступ между элементами */
     background-color: var(--card-background);
-    padding: 8px 12px;
+    padding: 10px 16px;
     border-radius: var(--global-border-radius);
     border: 1px solid var(--border-color);
     z-index: 10;
@@ -914,12 +914,11 @@ input[type="range"]::-webkit-slider-thumb {
     .top-info-container {
         position: static; /* Возвращаем в поток документа */
         margin: 0 auto 20px; /* Центрируем и добавляем отступ снизу */
-        width: 60%; /* Растягиваем на всю ширину родителя */
-        height: 80px;
+        width: fit-content; /* Ширина по содержимому */
         max-width: 400px; /* Ограничиваем максимальную ширину, как у других элементов */
         flex-direction: column; /* Элементы друг под другом для мобильных */
         gap: 8px; /* Уменьшаем отступ между строками */
-        padding: 6px 10px; /* Делаем контейнер чуть меньше */
+        padding: 10px 15px; /* Немного увеличим отступы для лучшего вида */
     }
     .page-title-container {
         padding-top: 0; /* Убираем отступ на мобильных */
