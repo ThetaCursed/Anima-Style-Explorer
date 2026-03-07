@@ -877,14 +877,8 @@
                     // Импортируем связи артистов и папок
                     for (const [folderId, artistIds] of Object.entries(folderArtists)) {
                         if (folderId && Array.isArray(artistIds)) {
-                            // Преобразуем в новый формат {id, added}
-                            // Используем обратный индекс как псевдо-timestamp для сохранения порядка
-                            const now = Date.now();
-                            const newArtistData = artistIds.map((id, index) => ({
-                                id: id,
-                                added: now - index 
-                            }));
-                            folderArtistsStore.put({ folderId, artistIds: newArtistData });
+                            // [FIX] Данные уже в правильном формате {id, added}, просто сохраняем их
+                            folderArtistsStore.put({ folderId, artistIds: artistIds });
                         }
                     }
 
