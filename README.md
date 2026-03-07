@@ -6,6 +6,9 @@ An interactive, high-performance visual database designed to explore artist styl
   <img src="images/Anima 2B Style Explorer.png" alt="Anima 2B Style Explorer Banner" width="800">
 </p>
 <p align="center">
+  <img src="images/Anima 2B Style Explorer - Favorites Tab.png" alt="Anima 2B Style Explorer - Favorites Tab" width="800">
+</p>
+<p align="center">
   <img src="images/swipe-mode.png" alt="Anima 2B Style Explorer Swipe Mode" width="800">
 </p>
 
