@@ -343,7 +343,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         item.addEventListener('drop', (e) => {
             e.preventDefault();
-            item.classList.remove('drag-over');
+            item.classList.remove('drag-over'); 
             const data = e.dataTransfer.getData('application/json');
             addArtistToFolder(folder.id, data);
         });
@@ -525,46 +525,64 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         return sourceFolderId;
     }
-    function addArtistToFolder(folderId, artistId) {
-        if (!allItemsMap.has(artistId)) { // Теперь и ключ, и ID - строки
-            window.appGlobals.showToast('Artist data not found.');
+    function addArtistToFolder(folderId, data) {
+        let artistIds;
+        try {
+            // Пытаемся распарсить как массив (мульти-выделение)
+            const parsedData = JSON.parse(data);
+            if (Array.isArray(parsedData)) {
+                artistIds = parsedData;
+            } else {
+                // Обратная совместимость, если передали не JSON-массив
+                artistIds = [String(data)];
+            }
+        } catch (e) {
+            // Если не JSON, считаем, что это одиночный ID
+            artistIds = [String(data)];
+        }
+
+        // Фильтруем ID, чтобы перемещать только тех, кто еще не в этой папке
+        const artistsToMove = artistIds.filter(id => 
+            !folderArtists.get(folderId)?.some(item => item.id === id)
+        );
+
+        if (artistsToMove.length === 0) {
+            window.appGlobals.showToast('Artist(s) are already in this folder.');
             return;
         }
-        const artistData = allItemsMap.get(artistId);
 
-        // Находим данные целевой папки для уведомления
         const destinationFolderData = folders.find(f => f.id === folderId);
+        const lastArtistId = artistsToMove[artistsToMove.length - 1]; // Последний для миниатюры
 
-        // Проверяем, не перемещаем ли мы художника в ту же папку, где он уже находится
-        if (folderArtists.get(folderId)?.some(item => item.id === artistId)) {
-            window.appGlobals.showToast('Artist is already in this folder.');
-            return;
+        // Используем одну транзакцию для всех операций
+        const tx = db.transaction([FOLDER_ARTISTS_STORE_NAME, FOLDERS_STORE_NAME], 'readwrite');
+        const folderArtistsStore = tx.objectStore(FOLDER_ARTISTS_STORE_NAME);
+        const foldersStore = tx.objectStore(FOLDERS_STORE_NAME);
+
+        // Удаляем художников из их предыдущих папок
+        artistsToMove.forEach(id => removeArtistFromPreviousFolder(id));
+
+        // Добавляем художников в новую папку
+        const targetFolderList = folderArtists.get(folderId) || [];
+        artistsToMove.forEach(id => {
+            targetFolderList.push({ id, added: Date.now() });
+        });
+        folderArtists.set(folderId, targetFolderList);
+        folderArtistsStore.put({ folderId, artistIds: targetFolderList });
+
+        // Обновляем миниатюру целевой папки
+        if (destinationFolderData) {
+            destinationFolderData.lastArtistId = lastArtistId;
+            foldersStore.put(destinationFolderData);
         }
 
-        // Сначала удаляем артиста из любой другой папки, где он мог быть
-        removeArtistFromPreviousFolder(artistId);
+        tx.oncomplete = () => {
+            // После успешной транзакции обновляем UI
+            renderFolders(); // Перерисовываем панель папок
 
-        if (!folderArtists.has(folderId)) {
-            folderArtists.set(folderId, []);
-        }
-        const artistIdArray = folderArtists.get(folderId);
-
-        // Добавляем объект с ID и временем добавления
-        artistIdArray.push({ id: artistId, added: Date.now() });
-
-        // Update folder_artists store
-        const folderArtistsTransaction = db.transaction(FOLDER_ARTISTS_STORE_NAME, 'readwrite');
-        const folderArtistsStore = folderArtistsTransaction.objectStore(FOLDER_ARTISTS_STORE_NAME);
-        folderArtistsStore.put({ folderId, artistIds: artistIdArray });
-
-        folderArtistsTransaction.oncomplete = () => {
-            // 1. Обновляем миниатюру для целевой папки
-            updateFolderThumbnail(folderId, artistId, () => {
-                // 2. После обновления миниатюры, перерисовываем панель папок.
-                renderFolders();
-
-                // 3. Плавно удаляем карточку из DOM, вместо полной перерисовки
-                const cardToRemove = galleryContainer.querySelector(`.card[data-id="${artistId}"]`);
+            // Плавно удаляем карточки из галереи
+            artistsToMove.forEach(id => {
+                const cardToRemove = galleryContainer.querySelector(`.card[data-id="${id}"]`);
                 if (cardToRemove) {
                     cardToRemove.style.transition = 'opacity 0.3s ease, transform 0.3s ease, max-height 0.3s ease 0.1s, margin 0.3s ease 0.1s, padding 0.3s ease 0.1s';
                     cardToRemove.style.opacity = '0';
@@ -574,16 +592,18 @@ document.addEventListener('DOMContentLoaded', () => {
                     cardToRemove.style.padding = '0';
                     cardToRemove.addEventListener('transitionend', () => cardToRemove.remove(), { once: true });
                 }
-
-                // 4. Показываем уведомление
-                if (destinationFolderData) {
-                    window.appGlobals.showToast(`Moved to "${destinationFolderData.name}"`);
-                }
             });
-        };
-        folderArtistsTransaction.onerror = (event) => {
-            console.error("Error adding artist to folder_artists:", event.target.error);
-            window.appGlobals.showToast('Error adding artist to folder.');
+
+            // Показываем одно уведомление для всей группы
+            if (destinationFolderData) {
+                const message = artistsToMove.length > 1
+                    ? `${artistsToMove.length} artists moved to "${destinationFolderData.name}"`
+                    : `Moved to "${destinationFolderData.name}"`;
+                window.appGlobals.showToast(message);
+            }
+
+            // Очищаем выделение после успешного перемещения
+            window.appGlobals.clearSelection();
         };
     }
 
@@ -617,9 +637,21 @@ document.addEventListener('DOMContentLoaded', () => {
     galleryContainer.addEventListener('dragstart', (e) => {
         const card = e.target.closest('.card');
         if (!card || window.appGlobals.currentView !== 'favorites') return;
-        
-        // Одиночное перетаскивание
-        e.dataTransfer.setData('application/json', card.dataset.id);
+
+        const selectedIds = window.appGlobals.selectedArtistIds;
+        const draggedId = card.dataset.id;
+
+        // Если перетаскиваемая карточка входит в группу выделенных,
+        // передаем всю группу.
+        if (selectedIds.has(draggedId)) {
+            e.dataTransfer.setData('application/json', JSON.stringify(Array.from(selectedIds)));
+        } else {
+            // Иначе, это одиночное перетаскивание. Очищаем выделение и передаем один ID.
+            window.appGlobals.clearSelection();
+            document.querySelectorAll('.card.selected').forEach(c => c.classList.remove('selected'));
+            e.dataTransfer.setData('application/json', JSON.stringify([draggedId]));
+        }
+
         e.dataTransfer.effectAllowed = 'move';
     });
 

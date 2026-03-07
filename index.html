@@ -15,7 +15,7 @@
     <title>Anima 2B Style Explorer - Visual Artist Guide for AI</title>
     <meta name="description" content="Visual database of over 20,000 artist styles for the Anima 2B model. Compare Danbooru artists and copy optimized prompts.">
     <meta name="keywords" content="Anima 2B, Anima AI, Stable Diffusion, Artist Styles, Danbooru Tags, AI Art Library">
-    <link rel="stylesheet" href="app/style.css?v=22">
+    <link rel="stylesheet" href="app/style.css?v=23">
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -124,8 +124,11 @@
     <main id="main-content">
         <div id="folders-panel-wrapper" class="folders-panel-wrapper" style="display: none;">
             <div id="folders-panel" class="folders-panel">
-                <div class="folders-header">Folders</div>
-                <p class="folders-hint">Drag a card to move it into a folder.</p>
+                <div class="folders-header">Folders</div>                
+                <div class="folders-hint">
+                    <span>Drag a card to move it into a folder.</span>
+                    <span>Hold <kbd>Ctrl</kbd> + click to select multiple cards.</span>
+                </div>
                 <div id="folders-list" class="folders-list-container"></div>
                 <button id="add-folder-btn" class="add-folder-button">+ New Folder</button>
             </div>
@@ -168,9 +171,9 @@
         <div class="swipe-hint">Use <kbd>←</kbd> <kbd>→</kbd> to navigate, <kbd>C</kbd> to copy name, <kbd>↓</kbd> to favorite, <kbd>Esc</kbd> to close</div>
     </div>
 
-    <script src="app/data.js?v=22"></script>
-    <script src="app/app.js?v=22"></script>
-    <script src="app/swipe-mode.js?v=22"></script>
-    <script src="app/folders.js?v=22"></script>
+    <script src="app/data.js?v=23"></script>
+    <script src="app/app.js?v=23"></script>
+    <script src="app/swipe-mode.js?v=23"></script>
+    <script src="app/folders.js?v=23"></script>
 </body>
 </html>

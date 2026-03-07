@@ -1,4 +1,4 @@
-﻿﻿document.addEventListener('DOMContentLoaded', () => {
+﻿﻿﻿﻿document.addEventListener('DOMContentLoaded', () => {
     const DEBUG_MODE = false; // Установите true, чтобы включить проверку путей к изображениям
 
     const galleryContainer = document.getElementById('gallery-container');
@@ -31,6 +31,7 @@
     let allItems = [];
     const galleryTitle = document.getElementById('gallery-title');
     let itemsSortedByWorks = []; 
+    let selectedArtistIds = new Set(); // Для мульти-выделения в избранном
     let favorites = new Map(); // Используем Map для хранения {id: timestamp}
     let currentItems = [];
     let currentPage = 0; // Текущая страница для ленивой загрузки
@@ -61,6 +62,8 @@
         get STORE_NAME() { return STORE_NAME; }, 
         get allItems() { return allItems; }, // Добавляем allItems для доступа из folders.js
         set db(value) { db = value; }, // Сеттер для обновления db из folders.js
+        get selectedArtistIds() { return selectedArtistIds; }, // Экспортируем для folders.js
+        clearSelection: () => selectedArtistIds.clear(), // Функция для очистки выделения
         toggleFavorite,
         showToast,
         renderView,
@@ -239,16 +242,31 @@
 
         // Копирование имени по клику на карточку (кроме кнопки "избранное")
         card.addEventListener('click', (e) => {
-            // Если кликнули по кнопке "избранное", ничего не делаем
             if (e.target.classList.contains('favorite-button')) {
                 return;
             }
 
-            // Копирование имени.
-            navigator.clipboard.writeText('@' + item.artist).then(() => {
-                showToast('Artist name copied to clipboard!');
-            });
+            // Логика мульти-выделения в "Избранном"
+            if (currentView === 'favorites' && e.ctrlKey) {
+                e.preventDefault(); // Предотвращаем выделение текста
+                if (selectedArtistIds.has(item.id)) {
+                    selectedArtistIds.delete(item.id);
+                    card.classList.remove('selected');
+                } else {
+                    selectedArtistIds.add(item.id);
+                    card.classList.add('selected');
+                }
+            } else {
+                // Стандартное поведение: копирование имени и сброс выделения
+                navigator.clipboard.writeText('@' + item.artist).then(() => {
+                    showToast('Artist name copied to clipboard!');
+                });
+                // Сбрасываем выделение, если кликнули без Ctrl
+                selectedArtistIds.clear();
+                document.querySelectorAll('.card.selected').forEach(c => c.classList.remove('selected'));
+            }
         });
+
         const favButton = card.querySelector('.favorite-button');
         favButton.addEventListener('click', (e) => {
             e.stopPropagation(); // Предотвращаем копирование имени
@@ -295,6 +313,7 @@
     function renderView() {
         currentPage = 0;
         galleryContainer.innerHTML = '';
+        selectedArtistIds.clear(); // Очищаем выделение при перерисовке
         // Управляем видимостью панели папок в зависимости от состояния
         if (currentView === 'favorites') {
             if (isFoldersPanelVisible && window.innerWidth > 992) {

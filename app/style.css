@@ -560,6 +560,13 @@ input[type="range"]::-webkit-slider-thumb {
     transform: scale(1.03);
 }
 
+/* Стиль для выделенной карточки */
+.card.selected {
+    transform: scale(1.03); /* Оставляем увеличенной */
+    box-shadow: 0 0 0 3px var(--accent-color), 0 5px 15px rgba(0,0,0,0.3);
+    border-color: var(--accent-color);
+}
+
 .card__image {
     width: 100%;
     height: auto;
@@ -1256,12 +1263,15 @@ input[type="range"]::-webkit-slider-thumb {
 
 /* Подсказка в панели папок */
 .folders-hint {
+    display: flex;
+    flex-direction: column;
+    gap: 4px; /* Уменьшенный отступ между строками подсказки */
     font-size: 14px;
     color: var(--secondary-text-color);
     text-align: center;
-    padding: 0 16px 16px; /* Отступы, чтобы она была под заголовком и перед списком */
+    padding: 0 16px 16px; 
     margin-bottom: 16px; /* Отступ до списка папок */
-    border-bottom: 1px solid var(--border-color); /* Разделительная линия */
+    border-bottom: 1px solid var(--border-color); 
     line-height: 1.4;
     font-weight: 500;
 }
