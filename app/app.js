@@ -1387,7 +1387,7 @@
                                     ${Array.from({ length: 74 }, (_, i) => `
                                     <div class="carousel-slide">
                                         <span class="carousel-zoom-btn"></span>
-                                        <img src="images/landing/collages/collage_${i + 1}.webp" alt="Collage Example ${i + 1}" class="carousel-image" loading="lazy">
+                                        <img src="images/landing/collages/${i + 1}.webp" alt="Collage Example ${i + 1}" class="carousel-image" loading="lazy">
                                     </div>
                                     `).join('')}
                                 </div>
