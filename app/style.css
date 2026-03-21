@@ -962,22 +962,30 @@ input[type="range"]::-webkit-slider-thumb {
 }
 
 .support-button-top {
-    font-size: 14px; /* Размер шрифта */
-    font-weight: 700; /* Делаем текст жирным */
-    color: #fff; /* Белый цвет текста для контраста */
-    background-color: var(--accent-color); /* Сплошной акцентный цвет фона */
+    /* Применяем стили от .cta-button */
+    font-size: 14px; /* Уменьшаем шрифт */
+    font-weight: 700; /* Делаем текст менее жирным */
+    color: #fff;
+    background: linear-gradient(135deg, #0a84ff 0%, #0056b3 100%);
     text-decoration: none;
-    padding: 6px 12px; /* Увеличиваем отступы для большей заметности */
-    border-radius: 10px; /* Слегка увеличим скругление */
-    border: none; /* Убираем рамку */
-    transition: background-color 0.2s, transform 0.2s, box-shadow 0.2s; /* Плавные переходы для анимации */
-    box-shadow: 0 3px 10px rgba(10, 132, 255, 0.3); /* Добавляем тень для глубины */
+    padding: 6px 12px; /* Уменьшаем отступы для компактности */
+    border-radius: 10px; /* Уменьшаем скругление */
+    border: 1px solid rgba(255,255,255,0.1);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 4px 12px rgba(10, 132, 255, 0.25), inset 0 1px 0 rgba(255,255,255,0.1);
+    cursor: pointer;
+    animation: pulse-glow 2.5s infinite alternate;
 }
 
 .support-button-top:hover {
-    background-color: #007aff; /* Более яркий оттенок синего при наведении */
-    transform: translateY(-2px) scale(1.02); /* Слегка уменьшаем эффект увеличения */
-    box-shadow: 0 5px 15px rgba(10, 132, 255, 0.4); /* Усиливаем тень при наведении */
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 6px 20px rgba(10, 132, 255, 0.4), inset 0 1px 0 rgba(255,255,255,0.2);
+    background: linear-gradient(135deg, #1c90ff 0%, #0062cc 100%);
+}
+
+.support-button-top:active {
+    transform: translateY(0px);
+    box-shadow: 0 4px 10px rgba(10, 132, 255, 0.3);
 }
 
 .author-credit span {
@@ -1522,3 +1530,901 @@ input[type="range"]::-webkit-slider-thumb {
     color: var(--accent-color);
     background-color: rgba(10, 132, 255, 0.05);
 }
+
+/* --- Утилитарный класс для блокировки скролла --- */
+.body-scroll-lock {
+    overflow: hidden;
+}
+
+
+/* ==========================================================================
+   --- Timed Promo Modal ---
+   ========================================================================== */
+.promo-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(15, 15, 18, 0.92);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    display: none; /* Скрыто по умолчанию */
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.4s;
+    z-index: 2500;
+    padding: 20px; /* Отступы для оверлея, чтобы контент не прилипал к краям */
+    box-sizing: border-box;
+}
+
+.promo-modal-overlay.visible {
+    display: flex;
+    opacity: 1;
+    visibility: visible;
+}
+
+.promo-modal-content {
+    background-color: var(--card-background);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: calc(var(--global-border-radius) + 6px);
+    max-width: 600px;
+    width: 100%;
+    max-height: calc(100vh - 40px); /* Ограничиваем высоту, чтобы окно не выходило за пределы экрана */
+    position: relative;
+    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.6);
+    transform: translateY(20px) scale(0.98);
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    overflow: hidden;
+    display: flex; /* Используем flex, чтобы тело могло скроллиться */
+    flex-direction: column;
+}
+
+/* Стилизация скроллбара для тела модального окна */
+.promo-modal-body {
+    overflow-y: auto; /* Добавляем прокрутку, если контент не помещается */
+    padding: 40px 45px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-color) transparent;
+}
+.promo-modal-body::-webkit-scrollbar { width: 6px; }
+.promo-modal-body::-webkit-scrollbar-track { background: transparent; }
+.promo-modal-body::-webkit-scrollbar-thumb { background-color: var(--border-color); border-radius: 10px; }
+
+.promo-modal-overlay.visible .promo-modal-content {
+    transform: translateY(0) scale(1);
+}
+
+.promo-modal-overlay.visible .promo-modal-content {
+    transform: translateY(0) scale(1);
+}
+.promo-modal-close-btn { /* Кнопка закрытия теперь позиционируется относительно .promo-modal-content */
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    font-size: 28px;
+    color: var(--secondary-text-color);
+    background: rgba(0,0,0,0.2);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.promo-modal-close-btn:hover {
+    color: #fff;
+    background: rgba(255,255,255,0.1);
+    transform: scale(1.05) rotate(90deg);
+}
+
+.promo-header h1 {
+    font-size: 28px;
+    font-weight: 800;
+    text-align: center;
+    margin: 0 0 8px 0;
+    background: linear-gradient(135deg, #ffffff 0%, #a5d4ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.promo-header p {
+    text-align: center;
+    font-size: 16px;
+    color: var(--secondary-text-color);
+    margin: 0 auto 24px;
+    max-width: 400px;
+    line-height: 1.5;
+}
+
+.promo-features-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 28px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px; /* Как в основном лендинге */
+}
+
+.promo-features-list li {
+    display: grid;
+    grid-template-columns: 40px 1fr;
+    grid-template-rows: auto auto;
+    align-items: center;
+    gap: 4px 20px;
+    padding: 20px;
+    background: rgba(10, 132, 255, 0.04);
+    border: 1px solid rgba(10, 132, 255, 0.15);
+    border-radius: var(--global-border-radius);
+    transition: background 0.2s, border-color 0.2s;
+    font-size: 15px;
+    color: #a1a1aa;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.promo-features-list li strong {
+    grid-column: 2;
+    grid-row: 1;
+    color: #fff;
+    font-weight: 700;
+    font-size: 17px;
+    line-height: 1.2;
+    padding: 0;
+}
+
+.promo-feature-icon {
+    grid-row: 1 / 3;
+    grid-column: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+    background: linear-gradient(135deg, rgba(10, 132, 255, 0.2), rgba(0, 234, 255, 0.1));
+    border: 1px solid rgba(10, 132, 255, 0.2);
+    border-radius: 12px;
+}
+
+.promo-cta-button {
+    display: flex;
+    flex-direction: column;
+    /* Изменения для кнопки */
+    max-width: 320px; /* Ограничиваем максимальную ширину */
+    margin: 0 auto; /* Центрируем кнопку */
+    align-items: center; /* Центрируем текст по горизонтали */
+    justify-content: center;
+    width: 100%;
+    padding: 16px 24px;
+    font-size: 18px;
+    font-weight: 700;
+    color: #fff;
+    background: linear-gradient(135deg, #0a84ff 0%, #0056b3 100%);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 14px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    box-shadow: 0 6px 20px rgba(10, 132, 255, 0.3);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.promo-cta-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(10, 132, 255, 0.4);
+    background: linear-gradient(135deg, #1c90ff 0%, #0062cc 100%);
+}
+
+.promo-cta-subtext {
+    display: block;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--secondary-text-color);
+    margin-top: 10px;
+    text-decoration: none;
+}
+
+.promo-cta-button small {
+    font-size: 12px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.7);
+    text-transform: none;
+    letter-spacing: 0;
+    margin-top: 6px;
+}
+/* --- Адаптивность для промо-окна --- */
+@media (max-width: 640px) {
+    .promo-modal-content {
+        padding: 0; /* Убираем паддинги с основного контента, они теперь в body */
+    }
+    .promo-modal-body {
+        padding: 30px 25px; /* Уменьшаем отступы на мобильных */
+    }
+    .promo-header h1 {
+        font-size: 24px; /* Уменьшаем заголовок */
+    }
+    .promo-header p {
+        font-size: 15px;
+    }
+    .promo-features-list li {
+        padding: 16px; /* Уменьшаем отступы у пунктов */
+        gap: 4px 16px;
+    }
+    .promo-features-list li strong {
+        font-size: 16px;
+    }
+}
+
+/* ==========================================================================
+   --- Landing Page Modal (PRO Sales Pitch) - ISOLATED & BULLETPROOF ---
+   ========================================================================== */
+
+/* 1. Фон и обертка */
+#landing-modal.landing-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(15, 15, 18, 0.92);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.4s;
+    z-index: 3000;
+    padding: 40px 20px;
+    overflow-y: auto;
+    box-sizing: border-box;
+}
+
+#landing-modal.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* 2. Контейнер */
+#landing-modal .landing-modal-content {
+    background-color: var(--card-background);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: calc(var(--global-border-radius) + 6px);
+    max-width: 860px;
+    width: 100%;
+    position: relative;
+    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.6), 
+                0 0 0 1px rgba(10, 132, 255, 0.1) inset;
+    transform: translateY(20px) scale(0.98);
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    overflow: hidden;
+    box-sizing: border-box;
+    padding: 0; /* Сброс паддингов, они теперь в body */
+}
+
+#landing-modal.visible .landing-modal-content {
+    transform: translateY(0) scale(1);
+}
+
+/* 3. Кнопка закрытия */
+#landing-modal .landing-modal-close-btn {
+    position: absolute;
+    top: 20px;
+    right: 24px;
+    font-size: 32px;
+    line-height: 1;
+    color: var(--secondary-text-color);
+    background: rgba(0,0,0,0.2);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s, transform 0.2s;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+#landing-modal .landing-modal-close-btn:hover {
+    color: #fff;
+    background: rgba(255,255,255,0.1);
+    transform: scale(1.05) rotate(90deg);
+}
+
+/* Скроллбар специально для лендинга */
+#landing-modal .landing-modal-body {
+    padding: 50px 60px;
+    max-height: 90vh;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--accent-color) transparent;
+}
+#landing-modal .landing-modal-body::-webkit-scrollbar { width: 6px; }
+#landing-modal .landing-modal-body::-webkit-scrollbar-track { background: transparent; }
+#landing-modal .landing-modal-body::-webkit-scrollbar-thumb { background-color: var(--border-color); border-radius: 10px; }
+
+/* 4. Hero Секция */
+#landing-modal .landing-header h1 {
+    font-family: inherit;
+    font-size: 46px;
+    font-weight: 800;
+    text-align: center;
+    margin: 0 0 16px 0;
+    line-height: 1.15;
+    letter-spacing: -0.5px;
+    background: linear-gradient(135deg, #ffffff 0%, #a5d4ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 4px 20px rgba(10, 132, 255, 0.15);
+}
+
+#landing-modal blockquote {
+    text-align: center;
+    font-size: 20px;
+    font-weight: 500;
+    color: var(--secondary-text-color); /* Уменьшаем отступ между цитатами */
+    margin: 0 auto 8px;
+    max-width: 600px;
+    line-height: 1.5;
+    padding: 0;
+    border: none;
+    background: none;
+}
+
+#landing-modal hr {
+    border: none;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border-color), transparent);
+    margin: 40px 0;
+}
+
+/* 5. Плейсхолдеры для изображений */
+#landing-modal .landing-image-placeholder {
+    background: linear-gradient(145deg, rgba(255,255,255,0.03) 0%, rgba(0,0,0,0.2) 100%);
+    border: 1px dashed rgba(255,255,255,0.1);
+    border-radius: var(--global-border-radius);
+    height: 280px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--secondary-text-color);
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-size: 14px;
+    box-shadow: inset 0 2px 20px rgba(0,0,0,0.2);
+    margin-bottom: 24px;
+}
+
+/* 6. Список преимуществ */
+#landing-modal .features-list {
+    list-style: none;
+    padding: 0;
+    margin: 32px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+#landing-modal .features-list li {
+    display: grid; /* Оставляем grid для выравнивания */
+    grid-template-columns: 40px 1fr; /* Уменьшаем колонку для иконки */
+    grid-template-rows: auto auto;
+    align-items: center;
+    gap: 4px 20px;
+    padding: 20px;
+    background: rgba(10, 132, 255, 0.04); /* Стиль :hover по умолчанию */
+    border: 1px solid rgba(10, 132, 255, 0.15); /* Стиль :hover по умолчанию */
+    border-radius: var(--global-border-radius);
+    transition: background 0.2s, border-color 0.2s;
+    font-size: 16px; /* Увеличиваем основной текст для лучшей читаемости */
+    color: #a1a1aa;
+    line-height: 1.6;
+    margin: 0;
+}
+
+#landing-modal .feature-icon {
+    grid-row: 1 / 3;
+    grid-column: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px; /* Уменьшаем размер */
+    height: 40px; /* Уменьшаем размер */
+    font-size: 20px; /* Уменьшаем иконку */
+    background: linear-gradient(135deg, rgba(10, 132, 255, 0.2), rgba(0, 234, 255, 0.1));
+    border: 1px solid rgba(10, 132, 255, 0.2);
+    border-radius: 12px; /* Уменьшаем скругление */
+    box-shadow: none; /* Убираем тень для минимализма */
+}
+
+#landing-modal .features-list li strong {
+    grid-column: 2;
+    grid-row: 1;
+    color: #fff;
+    font-weight: 600; /* Делаем заголовок менее "кричащим" */
+    font-size: 17px;
+    line-height: 1.2;
+    padding: 0;
+}
+
+/* Стилизация вложенных <strong> в описании преимуществ */
+#landing-modal .features-list li span strong {
+    font-weight: 600; /* Уменьшаем жирность */
+    color: #d1d1d6; /* Делаем цвет чуть менее ярким, чем основной белый */
+}
+
+/* Стилизация обертки для текста описания */
+#landing-modal .features-list li > span:not(.feature-icon) {
+    grid-column: 2;
+    grid-row: 2;
+}
+
+/* 7. Блок цены */
+#landing-modal .pricing-section {
+    position: relative;
+    background: linear-gradient(180deg, rgba(28, 28, 30, 0) 0%, rgba(10, 132, 255, 0.08) 100%);
+    border: 1px solid rgba(10, 132, 255, 0.3);
+    border-radius: var(--global-border-radius);
+    padding: 40px 30px;
+    text-align: center;
+    margin-top: 50px;
+    overflow: hidden;
+}
+
+#landing-modal .pricing-section::before {
+    content: '';
+    position: absolute;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background: radial-gradient(circle, rgba(10, 132, 255, 0.15) 0%, transparent 60%);
+    pointer-events: none;
+}
+
+#landing-modal .pricing-section h3 {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--accent-color);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin: 0 0 12px 0;
+}
+
+#landing-modal .pricing-section .price {
+    font-size: 54px;
+    font-weight: 800;
+    color: #fff;
+    margin: 0 0 8px 0;
+    color: #fff; /* [FIX] Явно устанавливаем белый цвет для цены */
+    line-height: 1;
+    text-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    padding: 0;
+}
+
+#landing-modal .pricing-section .price .old-price {
+    text-decoration: line-through;
+    font-size: 32px;
+    font-weight: 600;
+    color: var(--secondary-text-color);
+    margin-right: 12px;
+    opacity: 0.7;
+}
+
+#landing-modal .pricing-section .price span {
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--secondary-text-color);
+    vertical-align: middle;
+}
+
+/* 8. Главная кнопка (CTA) */
+#landing-modal .cta-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 400px;
+    margin: 24px auto 16px;
+    padding: 18px 32px;
+    font-size: 20px;
+    font-weight: 800;
+    color: #fff;
+    background: linear-gradient(135deg, #0a84ff 0%, #0056b3 100%);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 14px;
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 8px 25px rgba(10, 132, 255, 0.4), 
+                inset 0 2px 0 rgba(255,255,255,0.2);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    position: relative;
+    overflow: hidden;
+    animation: pulse-glow 2.5s infinite alternate;
+    box-sizing: border-box;
+}
+
+#landing-modal .cta-button::after {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 50%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    transform: skewX(-20deg);
+    animation: button-shine 4s infinite;
+}
+
+#landing-modal .cta-button:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 15px 35px rgba(10, 132, 255, 0.6), 
+                inset 0 2px 0 rgba(255,255,255,0.3);
+    background: linear-gradient(135deg, #1c90ff 0%, #0062cc 100%);
+    color: #fff; /* Защита от глобальных ссылок */
+}
+
+#landing-modal .cta-button:active {
+    transform: translateY(1px);
+    box-shadow: 0 5px 15px rgba(10, 132, 255, 0.4);
+}
+
+/* 8a. Якорь ценности (Value Anchor) */
+#landing-modal .pricing-section .value-anchor {
+    font-size: 15px;
+    font-weight: 600;
+    color: #a5d4ff; /* Светло-голубой для акцента */ /* Меняем отступы для нового положения */
+    text-shadow: 0 1px 5px rgba(10, 132, 255, 0.3);
+    margin: 0 auto 24px;
+    padding: 0;
+    max-width: 500px;
+    line-height: 1.5;
+    letter-spacing: 0.2px;
+    box-sizing: border-box;
+    position: relative; /* Для z-index, чтобы быть над градиентом */
+}
+
+#landing-modal .pricing-section .fine-print {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--secondary-text-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+}
+#landing-modal .pricing-section .fine-print::before {
+    content: '🔒';
+    font-size: 12px;
+}
+
+/* --- Анимации --- */
+@keyframes pulse-glow {
+    0% { box-shadow: 0 8px 25px rgba(10, 132, 255, 0.4), inset 0 2px 0 rgba(255,255,255,0.2); }
+    100% { box-shadow: 0 8px 40px rgba(10, 132, 255, 0.7), inset 0 2px 0 rgba(255,255,255,0.2); }
+}
+
+@keyframes button-shine {
+    0% { left: -100%; }
+    20% { left: 200%; }
+    100% { left: 200%; }
+}
+
+/* 9. Адаптивность для мобильных */
+@media (max-width: 768px) {
+    #landing-modal.landing-modal-overlay { padding: 16px; }
+    #landing-modal .landing-modal-body { padding: 30px 20px; }
+    #landing-modal .landing-header h1 { font-size: 32px; }
+    #landing-modal blockquote { font-size: 16px; margin-bottom: 24px; }
+    
+    #landing-modal .features-list li {
+        grid-template-columns: 46px 1fr;
+        padding: 16px; /* Уменьшаем отступы у пунктов */
+        gap: 8px 16px; /* Увеличиваем вертикальный отступ между заголовком и описанием */
+    }
+    #landing-modal .feature-icon { width: 46px; height: 46px; font-size: 22px; border-radius: 12px;}
+    #landing-modal .features-list li strong { font-size: 17px; }
+    /* [FIX] Уменьшаем размер основного текста и жирность вложенного <strong> на мобильных, чтобы соответствовать десктопу */
+    #landing-modal .features-list li { font-size: 14px; }
+    
+    #landing-modal .pricing-section { padding: 30px 20px; margin-top: 30px;}
+    #landing-modal .features-list li span strong {
+        font-weight: 600; /* Устанавливаем ту же жирность, что и на десктопе */
+        font-size: 14px;
+    }
+
+    #landing-modal .pricing-section .price { font-size: 42px; }
+    #landing-modal .cta-button { font-size: 18px; padding: 16px 20px; }
+}
+
+/* Стили для заголовка перед каруселью */
+#landing-modal .carousel-heading {
+    text-align: center;
+    font-size: 28px; /* Чуть меньше основного заголовка */
+    font-weight: 800; /* Как у основного заголовка */
+    line-height: 1.3;
+    letter-spacing: -0.2px; /* Как у основного заголовка */
+    background: linear-gradient(135deg, #ffffff 0%, #a5d4ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 4px 20px rgba(10, 132, 255, 0.1);
+    margin: 0 auto; /* Убираем нижний отступ, он есть у контейнера карусели */
+    max-width: 550px;
+}
+
+/* --- Landing Page Carousels --- */
+.landing-carousel-container {
+    margin: 36px 0;
+    position: relative;
+}
+
+.landing-carousel-container .carousel-frame {
+    overflow: hidden;
+    position: relative;
+    border-radius: var(--global-border-radius);
+    background-color: var(--border-color);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    /* aspect-ratio: 16 / 9; */ /* Убираем фиксированное соотношение сторон */
+}
+
+.landing-carousel-container .carousel-images {
+    display: flex;
+    width: 100%; /* [FIX] Явно задаем ширину для корректной работы transform */
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    height: 100%; /* Занимаем всю высоту фрейма */
+}
+
+.landing-carousel-container .carousel-slide {
+    width: 100%;
+    height: 100%;
+    flex-shrink: 0; /* Важно: запрещаем слайдам сжиматься */
+    position: relative;
+}
+
+.landing-carousel-container .carousel-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* Меняем на contain, чтобы изображение помещалось целиком */
+}
+.landing-carousel-container .carousel-frame > .carousel-arrow {
+    position: absolute;
+    z-index: 5;
+}
+
+.landing-carousel-container .carousel-nav {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 20px;
+}
+/* Стили для нового счетчика */
+.landing-carousel-container .carousel-counter {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--secondary-text-color);
+    user-select: none;
+}
+
+.landing-carousel-container .carousel-counter .current-slide-number {
+    color: var(--text-color);
+    font-size: 18px;
+}
+
+
+
+.landing-carousel-container .nav-dot {
+    background-color: var(--border-color);
+    border: none;
+    border-radius: 99px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.landing-carousel-container .nav-dot.active {
+    background-color: var(--accent-color);
+    color: #fff;
+}
+
+/* Стили для стрелок навигации */
+.landing-carousel-container .carousel-arrow {
+    top: 50%; /* Центрируем по вертикали */
+    transform: translateY(-50%);
+    background-color: rgba(0, 0, 0, 0.6); /* Делаем фон менее прозрачным */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3); /* Добавляем тень для отделения от фона */
+    color: #fff;
+    width: 52px; /* Увеличиваем размер */
+    height: 52px; /* Увеличиваем размер */
+    border-radius: 50%;
+    font-size: 34px; /* Увеличиваем иконку-стрелку */
+    font-weight: bold;
+    line-height: 1; /* Убираем лишний line-height, так как используем flex */
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.landing-carousel-container .carousel-arrow:hover {
+    background-color: rgba(0, 0, 0, 0.8); /* Делаем еще менее прозрачным при наведении */
+    transform: translateY(-50%) scale(1.05); /* Корректируем transform */
+}
+.carousel-arrow.prev { left: 16px; }
+.carousel-arrow.next { right: 16px; }
+
+/* Стили для карусели "До/После" */
+.before-after-carousel .nav-dot {
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--secondary-text-color);
+}
+
+.before-after-carousel .nav-dot:hover:not(.active) {
+    background-color: #4a4a4c;
+    color: var(--text-color);
+}
+
+/* Стили для карусели с коллажами */
+.collage-carousel .nav-dot {
+    width: 12px;
+    height: 12px;
+    padding: 0;
+}
+
+.collage-carousel .nav-dot:hover:not(.active) {
+    background-color: #5a5a5c;
+}
+
+.collage-carousel .nav-dot.active {
+    transform: scale(1.2);
+}
+
+@media (max-width: 768px) {
+    .landing-carousel-container .carousel-arrow {
+        width: 40px; /* Уменьшаем размер стрелок */
+        height: 40px;
+        font-size: 24px; /* Уменьшаем иконку внутри стрелки */
+    }
+    .before-after-carousel .nav-dot {
+        padding: 6px 12px; /* Уменьшаем кнопки */
+        font-size: 13px;
+    }
+}
+
+/* --- Стили для иконки зума в карусели --- */
+@media (min-width: 993px) {
+    .landing-carousel-container .carousel-slide::before {
+        content: '🔍';
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        width: 52px;
+        height: 52px;
+        background-color: rgba(0, 0, 0, 0.7);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 26px;
+        color: #fff;
+        cursor: pointer;
+        z-index: 6;
+        transition: all 0.2s ease;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    }
+
+    .landing-carousel-container .carousel-slide:hover::before {
+        background-color: rgba(0, 0, 0, 0.9);
+        transform: scale(1.1);
+    }
+
+    /* Псевдоэлемент для кликабельной области */
+    .carousel-zoom-btn {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 70px;
+        height: 70px;
+        z-index: 7;
+        cursor: pointer;
+        /* Для отладки можно добавить фон */
+        /* background: rgba(255, 0, 0, 0.2); */
+    }
+}
+
+/* --- Стили для лайтбокса (просмотр изображений) --- */
+.image-lightbox-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 4000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+}
+
+.image-lightbox-overlay.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+.image-lightbox-content {
+    max-width: 95vw;
+    max-height: 95vh;
+    object-fit: contain;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    transform: scale(0.95);
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.image-lightbox-overlay.visible .image-lightbox-content {
+    transform: scale(1);
+}
+
+.image-lightbox-close {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    color: #fff;
+    font-size: 40px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.2s, transform 0.2s;
+    z-index: 4001;
+    line-height: 1;
+}
+
+.image-lightbox-close:hover {
+    color: #ccc;
+    transform: scale(1.1);
+}
+
+/* Стрелки навигации в лайтбоксе */
+.image-lightbox-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #fff;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    font-size: 34px;
+    cursor: pointer;
+    z-index: 4001;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.image-lightbox-arrow.prev { left: 30px; }
+.image-lightbox-arrow.next { right: 30px; }
+.image-lightbox-arrow:hover { background-color: rgba(255, 255, 255, 0.2); }

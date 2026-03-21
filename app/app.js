@@ -1,4 +1,4 @@
-﻿﻿﻿﻿document.addEventListener('DOMContentLoaded', () => {
+﻿﻿document.addEventListener('DOMContentLoaded', () => {
     const DEBUG_MODE = false; // Установите true, чтобы включить проверку путей к изображениям
 
     const galleryContainer = document.getElementById('gallery-container');
@@ -1344,6 +1344,360 @@
         renderView();
     });
 
+    // --- Landing Page Modal Logic ---
+    const openLandingBtn = document.getElementById('open-landing-btn'); // Кнопка для открытия
+    const openLandingBtnAbout = document.getElementById('open-landing-btn-about'); // Кнопка на странице About
+    let landingModal = null; // Элемент модального окна будет загружен динамически
+    let isModalLoaded = false; // Флаг, чтобы не загружать модальное окно повторно
+    
+    let lightboxCarouselImages = [];
+    let lightboxCurrentIndex = -1;
+
+    function showLandingModal() {
+        // Загружаем HTML модального окна, если он еще не загружен
+        if (!isModalLoaded) {
+            // [FIX] Встраиваем HTML модального окна прямо в JS, чтобы избежать проблем с fetch() для локальных файлов.
+            // Это решает проблему "Could not load promotional content."
+            const modalHTML = `
+            <div id="landing-modal" class="landing-modal-overlay">
+                <div class="landing-modal-content">
+                    <button id="close-landing-btn" class="landing-modal-close-btn" title="Close (Esc)">&times;</button>
+                    <div id="landing-modal-body" class="landing-modal-body">
+                        <div class="landing-header">
+                            <h1>💎 Anima Preview 2 - Style Explorer</h1>
+                        </div>
+                        <blockquote>The professional benchmark for Anima P2. 40,000+ Re-generated Styles. Pure Aesthetics. Zero Guesswork.</blockquote>
+                        <div class="landing-carousel-container">
+                            <div class="carousel-frame">
+                                <div class="carousel-images">
+                                    <div class="carousel-slide">
+                                        <span class="carousel-zoom-btn"></span>
+                                        <img src="images/landing/Anima P2 - Style Explorer.png" alt="Anima Preview 2 - Style Explorer" class="carousel-image" loading="lazy">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+                        <ul class="features-list">
+                        <li><span class="feature-icon">🚀</span><strong>Massive Library Expansion:</strong><span>All <strong>20,000</strong> original styles re-generated to unleash their increased power in Anima P2, plus <strong>20,000+</strong> brand new styles. Experience the full potential across <strong>40,000+</strong> entries.</span></li>
+                        </ul>
+                        <div class="landing-carousel-container collage-carousel" data-has-arrows="true">
+                            <div class="carousel-frame">
+                                <div class="carousel-images">
+                                    ${Array.from({ length: 74 }, (_, i) => `
+                                    <div class="carousel-slide">
+                                        <span class="carousel-zoom-btn"></span>
+                                        <img src="images/landing/collages/collage_${i + 1}.webp" alt="Collage Example ${i + 1}" class="carousel-image" loading="lazy">
+                                    </div>
+                                    `).join('')}
+                                </div>
+                                <button class="carousel-arrow prev" data-direction="-1">&#10094;</button>
+                                <button class="carousel-arrow next" data-direction="1">&#10095;</button>
+                            </div>
+                            <div class="carousel-counter">
+                                <span class="current-slide-number">1</span> / 74
+                            </div>
+                        </div>
+                        <ul class="features-list">
+                        <li><span class="feature-icon">🎯</span><strong>Balanced Quality Modifiers:</strong><span>Generated with <code>masterpiece</code>, <code>best quality</code>, and <code>absurdres</code> for a polished look that <strong>keeps the true artist's DNA</strong>. This ensures your generation results closely match the preview. <strong>Note:</strong> No <code><strong>score_*</strong></code> tags were used to avoid stylistic distortion.</span></li>
+                        <li><span class="feature-icon">🔍</span><strong>Verified Artist Database:</strong><span>Our Danbooru artist list is curated based on the <strong>September 2025 knowledge cut-off</strong>. This ensures high-probability recognition by Anima P2 for authentic stylistic influence.</span></li>
+                        <li><span class="feature-icon">🧠</span><strong>Visual DNA Over Volume:</strong><span>Anima P2 is already a "master" of anime basics; it only needs <strong>40–60 works</strong> to isolate an artist’s unique signature. Our explorer surfaces <strong>Hidden Gems</strong> where specific artistic deviation is far more powerful than raw data volume.</span></li>
+                        <li><span class="feature-icon">🌟</span><strong>Uniqueness Rating (v2):</strong><span>Our updated algorithm identifies <strong>hidden gems</strong>, allowing you to find standout styles in seconds.</span></li>
+                        <li><span class="feature-icon">📂</span><strong>Seamless Library Migration:</strong><span>Don’t start from scratch. Easily export your existing styles and import them into Anima P2 to watch your collection evolve instantly.</span></li>
+                        <li><span class="feature-icon">⚡</span><strong>100% Offline Browser Power:</strong><span>Zero servers, zero lag, total privacy. Run the entire library locally in your Desktop browser with a <strong>single click</strong>.</span></li>
+                        <li><span class="feature-icon">📦</span><strong>Instant One-Click Delivery:</strong><span>Immediate access via high-speed Mega/G-Drive mirrors.</span></li>
+                        <li><span class="feature-icon">🎁</span><strong>Anima 1.0 Bonus:</strong><span>If we re-generate or expand the library for the final Anima 1.0 release, all current owners will get the <strong>update for free</strong>.</span></li>
+                        </ul>
+                        <hr>
+                        <div class="pricing-section"><h3>🐣 Early Bird Special</h3><p class="price"><span class="old-price">$24.99</span> $9.99</p><a href="https://app.lava.top/products/6b8b7751-569a-433d-8d1d-d0ee7c9f0c46/b194e527-5d7c-446c-a5fa-d33dfadb99f3?currency=USD" class="cta-button" target="_blank">🔥 GET ACCESS NOW</a><p class="fine-print">One-Time Payment. No Subscriptions. Lifetime access.</p></div>
+                    </div>
+                </div>
+            </div>`;
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+            landingModal = document.getElementById('landing-modal');
+            isModalLoaded = true;
+            // Добавляем контейнер для просмотра изображений
+            const lightboxHTML = `
+            <div id="image-lightbox" class="image-lightbox-overlay"> 
+                <span class="image-lightbox-close">&times;</span>
+                <button class="image-lightbox-arrow prev" id="lightbox-prev">&#10094;</button>
+                <img class="image-lightbox-content" id="lightbox-img">
+                <button class="image-lightbox-arrow next" id="lightbox-next">&#10095;</button>
+            </div>`;
+            document.body.insertAdjacentHTML('beforeend', lightboxHTML);
+
+            setupModalEventListeners();
+            setupLandingCarousels();
+        }
+
+        if (!landingModal) return;
+        landingModal.classList.add('visible');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeLandingModal() {
+        if (!landingModal) return;
+
+        landingModal.classList.remove('visible');
+        document.body.style.overflow = '';
+    }
+
+    // Эта функция будет вызвана один раз после загрузки модального окна
+    function setupModalEventListeners() {
+        const closeLandingBtn = document.getElementById('close-landing-btn');
+        if (closeLandingBtn) closeLandingBtn.addEventListener('click', closeLandingModal);
+
+        landingModal.addEventListener('click', (e) => {
+            if (e.target === landingModal) {
+                closeLandingModal();
+            }
+        });
+
+        // Обработчики для лайтбокса
+        const lightbox = document.getElementById('image-lightbox');
+        const lightboxPrevBtn = document.getElementById('lightbox-prev');
+        const lightboxNextBtn = document.getElementById('lightbox-next');
+        const lightboxClose = document.querySelector('.image-lightbox-close');
+        if (lightbox) {
+            lightbox.addEventListener('click', (e) => {
+                if (e.target === lightbox || e.target === lightboxClose) {
+                    lightbox.classList.remove('visible');
+                }
+            });
+        }
+        if (lightboxPrevBtn) lightboxPrevBtn.addEventListener('click', () => navigateLightbox(-1));
+        if (lightboxNextBtn) lightboxNextBtn.addEventListener('click', () => navigateLightbox(1));
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && lightbox && lightbox.classList.contains('visible')) {
+                lightbox.classList.remove('visible');
+            }
+            // Навигация стрелками клавиатуры в лайтбоксе
+            if (lightbox && lightbox.classList.contains('visible')) {
+                if (e.key === 'ArrowLeft') navigateLightbox(-1);
+                if (e.key === 'ArrowRight') navigateLightbox(1);
+            }
+
+        });
+
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('carousel-zoom-btn')) showImageInLightbox(e.target);
+        });
+    }
+
+    // Основные обработчики, которые всегда на странице
+    if (openLandingBtn) {
+        openLandingBtn.addEventListener('click', showLandingModal);
+    }
+    // Старый обработчик для openLandingBtnAbout больше не нужен, так как это теперь ссылка.
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && landingModal && landingModal.classList.contains('visible')) closeLandingModal();
+    });
+
+    // --- Landing Page Carousel Logic ---
+    // --- Логика для открытия модального окна по параметру в URL ---
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('openModal') === 'true') {
+        // Убедимся, что кнопка существует на текущей странице (index.html)
+        if (openLandingBtn) {
+            showLandingModal();
+        }
+        // Очищаем URL, чтобы при перезагрузке окно не открывалось снова
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
+
+    function showImageInLightbox(zoomButton) {
+        const slide = zoomButton.closest('.carousel-slide'); 
+        const carouselImagesContainer = zoomButton.closest('.carousel-images');
+        const allSlides = Array.from(carouselImagesContainer.querySelectorAll('.carousel-slide'));
+
+        // Сохраняем все источники изображений из текущей карусели
+        lightboxCarouselImages = allSlides.map(s => s.querySelector('.carousel-image').src);
+        
+        // Находим индекс текущего слайда
+        lightboxCurrentIndex = allSlides.indexOf(slide);
+
+        // Устанавливаем изображение и показываем лайтбокс
+        document.getElementById('lightbox-img').src = lightboxCarouselImages[lightboxCurrentIndex];
+        document.getElementById('image-lightbox').classList.add('visible');
+
+        // Обновляем видимость стрелок
+        updateLightboxArrows();
+    }
+
+    function navigateLightbox(direction) {
+        if (lightboxCurrentIndex === -1 || lightboxCarouselImages.length === 0) return;
+
+        const totalImages = lightboxCarouselImages.length;
+        // Добавляем циклическую навигацию
+        const newIndex = (lightboxCurrentIndex + direction + totalImages) % totalImages;
+        lightboxCurrentIndex = newIndex;
+        document.getElementById('lightbox-img').src = lightboxCarouselImages[lightboxCurrentIndex];
+        updateLightboxArrows();
+    }
+    function setupLandingCarousels() {
+        const carousels = document.querySelectorAll('.landing-carousel-container');
+        if (!carousels.length) return;
+
+        carousels.forEach(carousel => {
+            const imagesContainer = carousel.querySelector('.carousel-images');
+            const dots = carousel.querySelectorAll('.nav-dot');
+            const counter = carousel.querySelector('.carousel-counter .current-slide-number');
+            const arrows = carousel.querySelectorAll('.carousel-frame > .carousel-arrow'); // Ищем стрелки внутри фрейма
+            const totalSlides = carousel.querySelectorAll('.carousel-slide').length;
+            
+            let currentSlide = 0;
+
+            function goToSlide(slideIndex) {
+                currentSlide = (slideIndex + totalSlides) % totalSlides;
+
+                imagesContainer.style.transform = `translateX(-${currentSlide * 100}%)`;
+
+                // Обновляем либо точки, либо счетчик
+                if (dots.length > 0) {
+                    if (!dots[currentSlide]) return;
+                    dots.forEach(d => d.classList.remove('active'));
+                    dots[currentSlide].classList.add('active');
+                } else if (counter) {
+                    counter.textContent = currentSlide + 1;
+                }
+            }
+
+            dots.forEach(dot => {
+                dot.addEventListener('click', () => {
+                    const slideIndex = parseInt(dot.dataset.slide, 10);
+                    goToSlide(slideIndex);
+                });
+            });
+
+            arrows.forEach(arrow => {
+                arrow.addEventListener('click', () => {
+                    const direction = parseInt(arrow.dataset.direction, 10);
+                    goToSlide(currentSlide + direction);
+                });
+            });
+
+
+            // Инициализируем состояние при первой загрузке
+            goToSlide(0);
+        });
+    }
+    
+    function updateLightboxArrows() {
+        const prevArrow = document.getElementById('lightbox-prev');
+        const nextArrow = document.getElementById('lightbox-next');
+        if (!prevArrow || !nextArrow) return;
+
+        // Показываем стрелки всегда, если изображений больше одного, для циклической прокрутки
+        if (lightboxCarouselImages.length > 1) {
+            prevArrow.style.display = 'flex';
+            nextArrow.style.display = 'flex';
+        } else {
+            prevArrow.style.display = 'none';
+            nextArrow.style.display = 'none';
+        }
+    }
+
+    // --- Timed Promo Modal Logic (Dynamically Loaded) ---
+    function setupTimedPromoModal() {
+        const mainCtaBtn = document.getElementById('open-landing-btn');
+        if (!mainCtaBtn) return; // Если основной кнопки нет, ничего не делаем
+
+        const PROMO_TIMESTAMP_KEY = 'promoLastShownV3'; // Новая версия ключа для новой логики
+        const ONE_DAY_MS = 1 * 24 * 60 * 60 * 1000; // 24 часа в миллисекундах
+        const TWO_DAYS_MS = 2 * 24 * 60 * 60 * 1000; // 48 часов в миллисекундах
+
+        const lastShown = localStorage.getItem(PROMO_TIMESTAMP_KEY);
+        const now = Date.now();
+        
+        let promoTimeout; // Объявляем переменную для хранения ID таймера
+        // Показываем окно, только если запись отсутствует или прошло достаточно времени
+        if (!lastShown || (now - parseInt(lastShown, 10) > ONE_DAY_MS)) { // Используем 1 день как минимальный интервал
+            // Небольшая задержка перед показом, чтобы не было слишком навязчиво
+            promoTimeout = setTimeout(() => {
+                createAndShowPromoModal();
+            }, 25000);
+        }
+
+        function createAndShowPromoModal() {
+            // Проверяем, не открыто ли уже основное модальное окно.
+            const mainLandingModal = document.getElementById('landing-modal');
+            if (mainLandingModal && mainLandingModal.classList.contains('visible')) {
+                // Если основной лендинг открыт, не показываем промо, но ставим таймер на 1 день.
+                localStorage.setItem(PROMO_TIMESTAMP_KEY, Date.now().toString());
+                return; // Выходим, не показывая промо-окно
+            }
+
+            // Если модальное окно уже есть в DOM, просто показываем его
+            let promoModal = document.getElementById('promo-modal');
+            if (promoModal) {
+                document.body.classList.add('body-scroll-lock');
+                promoModal.classList.add('visible');
+                return;
+            }
+
+            // Создаем HTML-структуру модального окна
+           const modalHTML = `
+            <div id="promo-modal" class="promo-modal-overlay">
+                <div class="promo-modal-content">
+                    <button id="promo-modal-close-btn" class="promo-modal-close-btn" title="Close">&times;</button>
+                    <div class="promo-modal-body">
+                        <div class="promo-header">
+                            <h1>💎Anima Preview 2 - Style Explorer</h1>
+                            <p>The professional benchmark. Pure Aesthetics. Zero Guesswork.</p>
+                        </div>
+                        <ul class="promo-features-list">
+                            <li><span class="promo-feature-icon">🚀</span><strong>40,000+ Style Expansion</strong>All styles re-generated to unleash the full power and depth of Anima P2.</li>
+                            <li><span class="promo-feature-icon">🔄</span><strong>Seamless Library Migration</strong>Keep your library. Quickly import your existing styles and folders directly into the new P2 interface.</li>
+                            <li><span class="promo-feature-icon">🌟</span><strong>Uniqueness Rating (v2)</strong>Our updated algorithm identifies "hidden gems" and standout styles in seconds.</li>
+                            <li><span class="promo-feature-icon">⚡</span><strong>100% Offline Performance</strong>Zero servers, zero lag. Run the entire library locally with total privacy and instant response.</li>
+                        </ul>
+                        <a href="#" id="promo-cta-btn" class="promo-cta-button">💎 EXPLORE ALL FEATURES</a>
+                        <small class="promo-cta-subtext">Click to see everything included. Early Bird access inside.</small>
+                    </div>
+                </div>
+            </div>`;
+            
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+            promoModal = document.getElementById('promo-modal');
+            
+            // Добавляем обработчики событий к новым элементам
+            const closeBtn = document.getElementById('promo-modal-close-btn');
+            const ctaBtn = document.getElementById('promo-cta-btn');
+
+            const hideAndSetTimestamp = () => {
+                // Если промо-окно было показано, ставим таймер на 2 дня.
+                document.body.classList.remove('body-scroll-lock');
+                promoModal.classList.remove('visible');
+                // [FIX] Устанавливаем таймер на 48 часов (2 дня).
+                // Предыдущая логика была некорректной и приводила к немедленному повторному показу.
+                // Теперь мы просто сохраняем текущее время, а проверка будет `now - lastShown > TWO_DAYS_MS`.
+                localStorage.setItem(PROMO_TIMESTAMP_KEY, Date.now().toString());
+            };
+
+            closeBtn.addEventListener('click', hideAndSetTimestamp);
+            // promoModal.addEventListener('click', (e) => { if (e.target === promoModal) hideAndSetTimestamp(); }); // Убрано закрытие по клику на фон
+
+            ctaBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                hideAndSetTimestamp();
+                mainCtaBtn.click(); // Программно кликаем по основной кнопке
+            });
+
+            // Показываем созданное окно
+            document.body.classList.add('body-scroll-lock');
+            promoModal.classList.add('visible');
+        }
+
+        // Переносим проверку на 2 дня сюда, чтобы она применялась только после того,
+        // как пользователь взаимодействовал с окном.
+        if (lastShown && (now - parseInt(lastShown, 10) < TWO_DAYS_MS)) {
+            // Если с момента последнего показа прошло МЕНЬШЕ 2 дней, отменяем запланированный показ.
+            clearTimeout(promoTimeout);
+        }
+    }
+
     initDB()
         .then(() => {
             loadInitialData();
@@ -1352,5 +1706,6 @@
             console.error(err);
             galleryContainer.innerHTML = '<p style="text-align: center; grid-column: 1 / -1;">Failed to initialize database.</p>';
         });
+    setupTimedPromoModal(); // Вызываем новую функцию при инициализации
 
 });
