@@ -1364,27 +1364,27 @@
                     <button id="close-landing-btn" class="landing-modal-close-btn" title="Close (Esc)">&times;</button>
                     <div id="landing-modal-body" class="landing-modal-body">
                         <div class="landing-header">
-                            <h1>💎 Anima Preview 2 - Style Explorer</h1>
+                            <h1>💎 Anima Preview 3 - Style Explorer</h1>
                         </div>
-                        <blockquote>The professional benchmark for Anima P2. 40,000+ Re-generated Styles. Pure Aesthetics. Zero Guesswork.</blockquote>
+                        <blockquote>The professional benchmark for Anima P3. 42,000+ Re-generated Styles. Pure Aesthetics. Zero Guesswork.</blockquote>
                         <div class="landing-carousel-container">
                             <div class="carousel-frame">
                                 <div class="carousel-images">
                                     <div class="carousel-slide">
                                         <span class="carousel-zoom-btn"></span>
-                                        <img src="images/landing/Anima P2 - Style Explorer.png" alt="Anima Preview 2 - Style Explorer" class="carousel-image" loading="lazy">
+                                        <img src="images/landing/Anima P3 - Style Explorer.png" alt="Anima Preview 3 - Style Explorer" class="carousel-image" loading="lazy">
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <hr>
                         <ul class="features-list">
-                        <li><span class="feature-icon">🚀</span><strong>Massive Library Expansion:</strong><span>All <strong>20,000</strong> original styles re-generated to unleash their increased power in Anima P2, plus <strong>20,000+</strong> brand new styles. Experience the full potential across <strong>40,000+</strong> entries.</span></li>
+                        <li><span class="feature-icon">🚀</span><strong>Massive Library Expansion:</strong><span>All <strong>20,000</strong> original styles re-generated to unleash their increased power in Anima P3, plus <strong>22,000+</strong> brand new styles. Experience the full potential across <strong>42,000+</strong> entries.</span></li>
                         </ul>
                         <div class="landing-carousel-container collage-carousel" data-has-arrows="true">
                             <div class="carousel-frame">
                                 <div class="carousel-images">
-                                    ${Array.from({ length: 74 }, (_, i) => `
+                                    ${Array.from({ length: 70 }, (_, i) => `
                                     <div class="carousel-slide">
                                         <span class="carousel-zoom-btn"></span>
                                         <img src="images/landing/collages/${i + 1}.webp" alt="Collage Example ${i + 1}" class="carousel-image" loading="lazy">
@@ -1395,21 +1395,21 @@
                                 <button class="carousel-arrow next" data-direction="1">&#10095;</button>
                             </div>
                             <div class="carousel-counter">
-                                <span class="current-slide-number">1</span> / 74
+                                <span class="current-slide-number">1</span> / 70
                             </div>
                         </div>
                         <ul class="features-list">
                         <li><span class="feature-icon">🎯</span><strong>Balanced Quality Modifiers:</strong><span>Generated with <code>masterpiece</code>, <code>best quality</code>, and <code>absurdres</code> for a polished look that <strong>keeps the true artist's DNA</strong>. This ensures your generation results closely match the preview. <strong>Note:</strong> No <code><strong>score_*</strong></code> tags were used to avoid stylistic distortion.</span></li>
-                        <li><span class="feature-icon">🔍</span><strong>Verified Artist Database:</strong><span>Our Danbooru artist list is curated based on the <strong>September 2025 knowledge cut-off</strong>. This ensures high-probability recognition by Anima P2 for authentic stylistic influence.</span></li>
-                        <li><span class="feature-icon">🧠</span><strong>Visual DNA Over Volume:</strong><span>Anima P2 is already a "master" of anime basics; it only needs <strong>40–60 works</strong> to isolate an artist’s unique signature. Our explorer surfaces <strong>Hidden Gems</strong> where specific artistic deviation is far more powerful than raw data volume.</span></li>
+                        <li><span class="feature-icon">🔍</span><strong>Verified Artist Database:</strong><span>Our Danbooru artist list is curated based on the <strong>September 2025 knowledge cut-off</strong>. This ensures high-probability recognition by Anima P3 for authentic stylistic influence.</span></li>
+                        <li><span class="feature-icon">🧠</span><strong>Visual DNA Over Volume:</strong><span>Anima P3 is already a "master" of anime basics; it only needs <strong>40–60 works</strong> to isolate an artist’s unique signature. Our explorer surfaces <strong>Hidden Gems</strong> where specific artistic deviation is far more powerful than raw data volume.</span></li>
                         <li><span class="feature-icon">🌟</span><strong>Uniqueness Rating (v2):</strong><span>Our updated algorithm identifies <strong>hidden gems</strong>, allowing you to find standout styles in seconds.</span></li>
-                        <li><span class="feature-icon">📂</span><strong>Seamless Library Migration:</strong><span>Don’t start from scratch. Easily export your existing styles and import them into Anima P2 to watch your collection evolve instantly.</span></li>
-                        <li><span class="feature-icon">⚡</span><strong>100% Offline Browser Power:</strong><span>Zero servers, zero lag, total privacy. Run the entire library locally in your Desktop browser with a <strong>single click</strong>.</span></li>
+                        <li><span class="feature-icon">📂</span><strong>Seamless Library Migration:</strong><span>Don’t start from scratch. Easily export your existing styles and import them into Anima P3 to watch your collection evolve instantly.</span></li>
+                        <li><span class="feature-icon">⚡</span><strong>100% Offline Browser Power:</strong><span>Zero servers, zero lag, total privacy. Run the entire library locally in your <strong>Desktop browser</strong> with a <strong>single click</strong>.</span></li>
                         <li><span class="feature-icon">📦</span><strong>Instant One-Click Delivery:</strong><span>Immediate access via high-speed Mega/G-Drive mirrors.</span></li>
                         <li><span class="feature-icon">🎁</span><strong>Anima 1.0 Bonus:</strong><span>If we re-generate or expand the library for the final Anima 1.0 release, all current owners will get the <strong>update for free</strong>.</span></li>
                         </ul>
                         <hr>
-                        <div class="pricing-section"><h3>🐣 Early Bird Special</h3><p class="price"><span class="old-price">$24.99</span> $9.99</p><a href="https://app.lava.top/products/6b8b7751-569a-433d-8d1d-d0ee7c9f0c46/b194e527-5d7c-446c-a5fa-d33dfadb99f3?currency=USD" class="cta-button" target="_blank">🔥 GET ACCESS NOW</a><p class="fine-print">One-Time Payment. No Subscriptions. Lifetime access.</p></div>
+                        <div class="pricing-section"><h3>🐣 Early Bird Special</h3><p class="price"><span class="old-price">$29.99</span> $14.99</p><a href="https://app.lava.top/products/a1f18bbc-c5a8-4234-a4e2-bdb04a3dc582/76e1334d-44ba-495f-8926-f1e3f1a69c5b?currency=USD" class="cta-button" target="_blank">🔥 GET ACCESS NOW</a><p class="fine-print">One-Time Payment. No Subscriptions. Lifetime access.</p></div>
                     </div>
                 </div>
             </div>`;
@@ -1644,12 +1644,12 @@
                     <button id="promo-modal-close-btn" class="promo-modal-close-btn" title="Close">&times;</button>
                     <div class="promo-modal-body">
                         <div class="promo-header">
-                            <h1>💎Anima Preview 2 - Style Explorer</h1>
+                            <h1>💎Anima Preview 3 - Style Explorer</h1>
                             <p>The professional benchmark. Pure Aesthetics. Zero Guesswork.</p>
                         </div>
                         <ul class="promo-features-list">
-                            <li><span class="promo-feature-icon">🚀</span><strong>40,000+ Style Expansion</strong>All styles re-generated to unleash the full power and depth of Anima P2.</li>
-                            <li><span class="promo-feature-icon">🔄</span><strong>Seamless Library Migration</strong>Keep your library. Quickly import your existing styles and folders directly into the new P2 interface.</li>
+                            <li><span class="promo-feature-icon">🚀</span><strong>42,000+ Style Expansion</strong>All styles re-generated to unleash the full power and depth of Anima P3.</li>
+                            <li><span class="promo-feature-icon">🔄</span><strong>Seamless Library Migration</strong>Keep your library. Quickly import your existing styles and folders directly into the new P3 interface.</li>
                             <li><span class="promo-feature-icon">🌟</span><strong>Uniqueness Rating (v2)</strong>Our updated algorithm identifies "hidden gems" and standout styles in seconds.</li>
                             <li><span class="promo-feature-icon">⚡</span><strong>100% Offline Performance</strong>Zero servers, zero lag. Run the entire library locally with total privacy and instant response.</li>
                         </ul>
