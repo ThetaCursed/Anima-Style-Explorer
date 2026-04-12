@@ -1973,6 +1973,19 @@ input[type="range"]::-webkit-slider-thumb {
     grid-row: 2;
 }
 
+/* Стилизация ссылки на источник данных в модальном окне */
+#landing-modal .features-list li a {
+    color: var(--accent-color);
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.2s, text-decoration 0.2s;
+}
+
+#landing-modal .features-list li a:hover {
+    color: #1c90ff; /* Более яркий оттенок при наведении */
+    text-decoration: underline;
+}
+
 /* 7. Блок цены */
 #landing-modal .pricing-section {
     position: relative;
