@@ -1410,7 +1410,7 @@
                         <li><span class="feature-icon">🎁</span><strong>Anima 1.0 Bonus:</strong><span>If we re-generate or expand the library for the final Anima 1.0 release, all current owners will get the <strong>update for free</strong>.</span></li>
                         </ul>
                         <hr>
-                        <div class="pricing-section"><h3>🐣 Early Bird Special</h3><p class="price"><span class="old-price">$29.99</span> $14.99</p><a href="https://app.lava.top/products/a1f18bbc-c5a8-4234-a4e2-bdb04a3dc582/76e1334d-44ba-495f-8926-f1e3f1a69c5b?currency=USD" class="cta-button" target="_blank">🔥 GET ACCESS NOW</a><p class="fine-print">One-Time Payment. No Subscriptions. Lifetime access.</p></div>
+                        <div class="pricing-section"><h3>🐣 Early Bird Special</h3><p class="price"><span class="old-price">$24.99</span> $9.99</p><a href="https://app.lava.top/products/a1f18bbc-c5a8-4234-a4e2-bdb04a3dc582/76e1334d-44ba-495f-8926-f1e3f1a69c5b?currency=USD" class="cta-button" target="_blank">🔥 GET ACCESS NOW</a><p class="fine-print">One-Time Payment. No Subscriptions. Lifetime access.</p></div>
                     </div>
                 </div>
             </div>`;
