@@ -18,11 +18,11 @@ The **Anima 2B Style Explorer** is a specialized tool for AI artists and prompt 
 Instead of guessing, you can now visually verify every style before you hit "Generate".
 
 ## ✨ Current Status: Goal Achieved!
-- **Massive Library:** Now featuring over 20,000 danbooru-tagged artist previews.
+- **Massive Library:** Now featuring over 40,000 danbooru-tagged artist previews.
 
 ## 🛠️ Key Features
 *   **Visual Search & Filtering:**
- Instantly search over 20,000 styles by name. Jump directly to artists based on their dataset size (`Works`) or their **Uniqueness Rank**.
+ Instantly search over 40,000 styles by name. Jump directly to artists based on their dataset size (`Works`) or their **Uniqueness Rank**.
 *   **Advanced Sorting:**
  Organize artists alphabetically (`A-Z`), by the number of training images (`Works`), or by their stylistic **Uniqueness** to find hidden gems.
 *   **Favorites Management:**
@@ -42,18 +42,6 @@ Easily back up your favorites to a `.json` file or export a simple `.txt` list o
     *   **Hotkeys:** Navigate with `←`/`→`, favorite with `↓`, and copy names with `C`.
 *   **High Performance & Offline Use:**
  Built with lightweight Vanilla JS and optimized WebP images for blazing-fast speed. The entire app can be downloaded and run offline.
-
-## 💾 Offline Usage
-You can run this tool locally on your computer for offline access. The entire application is self-contained and is only ~800MB.
-
-1.  **Download the project:**
-    *   **Direct Download:** [Click here to download the ZIP file](https://github.com/ThetaCursed/Anima-Style-Explorer/archive/refs/heads/main.zip).
-    *   **Or via Git:** `git clone https://github.com/ThetaCursed/Anima-Style-Explorer.git`
-
-2.  **Unzip the folder** if you downloaded the ZIP file.
-
-3.  **Run the application:** Simply open the `index.html` file in your web browser.
-
 
 ## 💻 Technical Stack
 - **Core Model:** Anima 2B
