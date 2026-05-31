@@ -74,7 +74,7 @@
     const IMAGE_BRANCH = "main";
 
     function getCdnUrl(partition, id) {
-        return `https://cdn.statically.io/gh/${IMAGE_REPO}/${IMAGE_BRANCH}/images/${partition}/${id}.webp`;
+        return `https://cdn.jsdelivr.net/gh/${IMAGE_REPO}@${IMAGE_BRANCH}/images/${partition}/${id}.webp`;
     }
 
 
