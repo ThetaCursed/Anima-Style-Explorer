@@ -1407,6 +1407,7 @@
                             <div class="carousel-counter">
                                 <span class="current-slide-number">1</span> / 40
                             </div>
+                        </div>    
                             <ul class="features-list">
                         <li><span class="feature-icon">🚀</span><strong>Anima Base - Classic Benchmark:</strong><span>Every style has been generated on a white background to isolate the artist's pure signature. See exactly how each DNA affects <strong>signature drawing techniques, facial anatomy, and unique shading</strong> without any background noise. The ultimate clean reference tool.</span></li>
                         </ul>
