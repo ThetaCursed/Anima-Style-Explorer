@@ -1364,9 +1364,19 @@
                     <button id="close-landing-btn" class="landing-modal-close-btn" title="Close (Esc)">&times;</button>
                     <div id="landing-modal-body" class="landing-modal-body">
                         <div class="landing-header">
-                            <h1>💎 Anima Base 1.0 - Style Explorer</h1>
+                            <h1>💎 Anima Base 1.0 — Style Explorer</h1>
                         </div>
-                        <blockquote>The professional benchmark for Anima Base 1.0. 43,000+ Re-generated Styles. Pure Aesthetics. Zero Guesswork.</blockquote>
+                        <blockquote>Two professional benchmarks for Anima Base. 43,000+ unique styles covering 86,400+ Total Generations across Classic & HD editions. Pure Aesthetics. Zero Guesswork.</blockquote>
+                        <div class="landing-carousel-container">
+                            <div class="carousel-frame">
+                                <div class="carousel-images">
+                                    <div class="carousel-slide">
+                                        <span class="carousel-zoom-btn"></span>
+                                        <img src="images/landing/Anima Base (Turbo) - Style Explorer.png" alt="Anima Base 1.0 - Style Explorer" class="carousel-image" loading="lazy">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <div class="landing-carousel-container">
                             <div class="carousel-frame">
                                 <div class="carousel-images">
@@ -1379,7 +1389,7 @@
                         </div>
                         <hr>
                         <ul class="features-list">
-                        <li><span class="feature-icon">🚀</span><strong>Massive Library Rebirth:</strong><span>Every single style has been <strong>re-generated</strong> to unleash its true power in Anima Base 1.0. Experience pure artistic potential across <strong>43,000+</strong> entries.</span></li>
+                        <li><span class="feature-icon">⚡</span><strong>Anima Base - New HD Benchmark:</strong><span>Every style has been generated in <strong>high resolution (832x1216)</strong> using <strong>Anima Base 1.0 + Turbo LoRA</strong>. See exactly how each artist’s DNA interacts with <strong>character, lighting, outfits, and rich environments</strong>. Know in advance how a style performs before you hit generate.</span></li>
                         </ul>
                         <div class="landing-carousel-container collage-carousel" data-has-arrows="true">
                             <div class="carousel-frame">
@@ -1387,7 +1397,26 @@
                                     ${Array.from({ length: 40 }, (_, i) => `
                                     <div class="carousel-slide">
                                         <span class="carousel-zoom-btn"></span>
-                                        <img src="images/landing/collages/${i + 1}.webp" alt="Collage Example ${i + 1}" class="carousel-image" loading="lazy">
+                                        <img src="images/landing/hd/${i + 1}.webp" alt="Collage Example ${i + 1}" class="carousel-image" loading="lazy">
+                                    </div>
+                                    `).join('')}
+                                </div>
+                                <button class="carousel-arrow prev" data-direction="-1">&#10094;</button>
+                                <button class="carousel-arrow next" data-direction="1">&#10095;</button>
+                            </div>
+                            <div class="carousel-counter">
+                                <span class="current-slide-number">1</span> / 40
+                            </div>
+                            <ul class="features-list">
+                        <li><span class="feature-icon">🚀</span><strong>Anima Base - Classic Benchmark:</strong><span>Every style has been generated on a white background to isolate the artist's pure signature. See exactly how each DNA affects <strong>signature drawing techniques, facial anatomy, and unique shading</strong> without any background noise. The ultimate clean reference tool.</span></li>
+                        </ul>
+                        <div class="landing-carousel-container collage-carousel" data-has-arrows="true">
+                            <div class="carousel-frame">
+                                <div class="carousel-images">
+                                    ${Array.from({ length: 40 }, (_, i) => `
+                                    <div class="carousel-slide">
+                                        <span class="carousel-zoom-btn"></span>
+                                        <img src="images/landing/classic/${i + 1}.webp" alt="Collage Example ${i + 1}" class="carousel-image" loading="lazy">
                                     </div>
                                     `).join('')}
                                 </div>
@@ -1405,11 +1434,11 @@
                         <li><span class="feature-icon">📊</span><strong>Data-Driven Sorting:</strong><span>We processed metadata from <strong>9,113,285</strong> Danbooru images to provide sorting based on actual community engagement. Discover artists by <strong>Avg. Favs</strong> - Average favorites per post or <strong>Avg. Score</strong> - Average community rating per post. <br>Metadata source: <a href="https://huggingface.co/datasets/trojblue/danbooru2025-metadata" target="_blank">Hugging Face</a></span></li>
                         <li><span class="feature-icon">🌟</span><strong>Uniqueness Rating (v2):</strong><span>Our updated algorithm identifies <strong>hidden gems</strong>, allowing you to find standout styles in seconds.</span></li>
                         <li><span class="feature-icon">📂</span><strong>Seamless Library Migration:</strong><span>Don’t start from scratch. Easily export your existing styles and import them into Anima 1.0 to watch your collection evolve instantly.</span></li>
-                        <li><span class="feature-icon">⚡</span><strong>100% Offline Browser Power:</strong><span>Zero servers, zero lag, total privacy. Run the entire library locally in your <strong>Desktop browser</strong> with a <strong>single click</strong>.</span></li>
+                        <li><span class="feature-icon">💻</span><strong>100% Offline Browser Power:</strong><span>Zero servers, zero lag, total privacy. Run the entire library locally in your <strong>Desktop browser</strong> with a <strong>single click</strong>.</span></li>
                         <li><span class="feature-icon">📦</span><strong>Instant One-Click Delivery:</strong><span>Immediate access via high-speed Mega/G-Drive mirrors.</span></li>
                         </ul>
                         <hr>
-                        <div class="pricing-section"><h3>🐣 Early Bird Special</h3><p class="price"><span class="old-price">$24.99</span> $9.99</p><a href="https://app.lava.top/products/ee1d5522-4dd4-444c-a507-b841f4dbbb23/11e24dbe-05aa-4b56-adc9-c1b6ee607f0a?currency=USD" class="cta-button" target="_blank">🔥 GET ACCESS NOW</a><p class="fine-print">One-Time Payment. No Subscriptions. Lifetime access.</p></div>
+                        <div class="pricing-section"><h3>🐣 Early Bird Special</h3><p class="price"><span class="old-price">$24.99</span> $9.99</p><a href="https://app.lava.top/products/e2acf6ae-be97-4309-ad56-9d572fe80c51/ecc8b35a-b33f-43eb-9293-4c321e0b0fd1?currency=USD" class="cta-button" target="_blank">🔥 GET ACCESS NOW</a><p class="fine-print">One-Time Payment. No Subscriptions. Lifetime access.</p></div>
                     </div>
                 </div>
             </div>`;
@@ -1644,14 +1673,24 @@
                     <button id="promo-modal-close-btn" class="promo-modal-close-btn" title="Close">&times;</button>
                     <div class="promo-modal-body">
                         <div class="promo-header">
-                            <h1>💎Anima Base 1.0 - Style Explorer</h1>
-                            <p>The professional benchmark. Pure Aesthetics. Zero Guesswork.</p>
+                            <h1>💎 Anima Base 1.0 — Style Explorer</h1>
+                            <p>The ultimate dual benchmark with 43,000+ styles and 86,400+ images. Pure Aesthetics. Zero Guesswork.</p>
+                        </div>
+                        <div class="landing-carousel-container">
+                            <div class="carousel-frame">
+                                <div class="carousel-images">
+                                    <div class="carousel-slide">
+                                        <span class="carousel-zoom-btn"></span>
+                                        <img src="images/landing/turbo-popup.webp" alt="Anima Base (Turbo) - Style Explorer" class="carousel-image" loading="lazy">
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <ul class="promo-features-list">
-                            <li><span class="promo-feature-icon">🚀</span><strong>43,000+ Style Expansion</strong>All styles re-generated to unleash the full power and depth of Anima Base 1.0.</li>
+                            <li><span class="promo-feature-icon">⚡</span><strong>Double Benchmark Expansion</strong>Explore 43,000+ unique styles across two separate editions: New HD (832x1216) and Classic benchmarks.</li>
                             <li><span class="promo-feature-icon">🔄</span><strong>Seamless Library Migration</strong>Keep your library. Quickly import your existing styles and folders directly into the new interface.</li>
                             <li><span class="promo-feature-icon">🌟</span><strong>Uniqueness Rating (v2)</strong>Our updated algorithm identifies "hidden gems" and standout styles in seconds.</li>
-                            <li><span class="promo-feature-icon">⚡</span><strong>100% Offline Performance</strong>Zero servers, zero lag. Run the entire library locally with total privacy and instant response.</li>
+                            <li><span class="promo-feature-icon">💻</span><strong>100% Offline Performance</strong>Zero servers, zero lag. Run the entire library locally with total privacy and instant response.</li>
                         </ul>
                         <a href="#" id="promo-cta-btn" class="promo-cta-button">💎 EXPLORE ALL FEATURES</a>
                         <small class="promo-cta-subtext">Click to see everything included. Early Bird access inside.</small>

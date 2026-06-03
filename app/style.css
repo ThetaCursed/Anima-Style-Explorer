@@ -2489,3 +2489,12 @@ input[type="range"]::-webkit-slider-thumb {
 .image-lightbox-arrow.prev { left: 30px; }
 .image-lightbox-arrow.next { right: 30px; }
 .image-lightbox-arrow:hover { background-color: rgba(255, 255, 255, 0.2); }
+
+
+#promo-modal .landing-carousel-container .carousel-slide::before {
+    display: none !important;
+}
+
+#promo-modal .carousel-zoom-btn {
+    display: none !important;
+}
